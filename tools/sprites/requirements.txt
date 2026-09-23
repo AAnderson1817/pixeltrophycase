@@ -1,0 +1,5 @@
+# Sprite pipeline (tools/sprites/extract.py). Tested with numpy 2.4.4, Pillow 12.2.0, SciPy 1.17.1;
+# other versions may quantise a few pixels differently, which is fine: the committed atlas is the source of truth.
+numpy>=2.0
+Pillow>=11.0
+scipy>=1.13

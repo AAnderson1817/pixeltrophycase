@@ -1,0 +1,42 @@
+{
+  "idle": {
+    "screen": "b0a8ee58238b45cf41d3cbbe",
+    "bloom": "f8178545891b396741e61c2f"
+  },
+  "charge": {
+    "screen": "924988fa9c7e65a611103054",
+    "bloom": "ba6d67b032b7a465d387c920"
+  },
+  "hitstop": {
+    "screen": "29d0374250b08bc9febba3f4",
+    "bloom": "65d299fc6fb17993df44a1bb"
+  },
+  "reveal-legendary": {
+    "screen": "3b8db61d6065b1a9d25b1957",
+    "bloom": "530bc3d4d52cf7387b3819f8"
+  },
+  "wall-break": {
+    "screen": "b698faf37981452125d783cb",
+    "bloom": "f70da01f05b7b9cc7e3cabec"
+  },
+  "settled": {
+    "screen": "657a25703d063e3863b88824",
+    "bloom": "e7acc2e9622082b65a09b755"
+  },
+  "collect": {
+    "screen": "d4a6ce1990ea41020f82e455",
+    "bloom": "20f0c2ab545cc7210af4a960"
+  },
+  "fake-rare": {
+    "screen": "68809f8a1379f4b667459d37",
+    "bloom": "8ac4587cd73484a8695c4965"
+  },
+  "upgrade": {
+    "screen": "57f00f57f82b909870cf6e1d",
+    "bloom": "3df473253189a17cf451f0ec"
+  },
+  "epic": {
+    "screen": "53933e170b8129686131d024",
+    "bloom": "1d7f77b81799428b263b0828"
+  }
+}

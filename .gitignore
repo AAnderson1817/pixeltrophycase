@@ -1,0 +1,8 @@
+node_modules/
+dist/
+test-results/
+playwright-report/
+tools/sprites/out/
+__pycache__/
+*.pyc
+.DS_Store

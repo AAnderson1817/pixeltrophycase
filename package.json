@@ -1,0 +1,28 @@
+{
+  "name": "loot-pixel-vault",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Pixel-art loot-card opener: collect 30 armor pieces across six sets. Canvas 2D, no runtime dependencies.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && node scripts/export-artifact.mjs",
+    "preview": "vite preview",
+    "test": "playwright test",
+    "test:golden:update": "UPDATE_GOLDEN=1 playwright test tests/golden.spec.js",
+    "bench": "node scripts/bench.mjs",
+    "sprites": "python3 tools/sprites/extract.py",
+    "format": "prettier --write \"src/**/*.{js,css}\" \"tests/**/*.js\" \"scripts/**/*.mjs\" index.html",
+    "format:check": "prettier --check \"src/**/*.{js,css}\" \"tests/**/*.js\" \"scripts/**/*.mjs\" index.html",
+    "test:dist": "npm run build && GAME_URL=file://$PWD/dist/index.html playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.56.0",
+    "prettier": "^3.6.2",
+    "vite": "^8.0.0",
+    "vite-plugin-singlefile": "^2.3.3"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  }
+}

@@ -1,0 +1,75 @@
+import { test, expect } from '@playwright/test';
+import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { openGame } from './helpers.js';
+
+// Golden frames: the main canvas and the bloom buffer are hashed at fixed points of a scripted, deterministic run.
+// Any change to what the game draws changes a hash. That is the point: refactors must keep every hash; intentional
+// visual changes regenerate them with `npm run test:golden:update` (and the diff of frames.json is reviewed).
+const FILE = new URL('./golden/frames.json', import.meta.url);
+
+async function hashCanvases(page) {
+  return page.evaluate(async () => {
+    const out = {};
+    for (const id of ['screen', 'bloom']) {
+      const c = document.getElementById(id);
+      const d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data;
+      const buf = await crypto.subtle.digest('SHA-256', d);
+      out[id] = [...new Uint8Array(buf)]
+        .slice(0, 12)
+        .map((b) => b.toString(16).padStart(2, '0'))
+        .join('');
+    }
+    return out;
+  });
+}
+
+test('golden frames', async ({ page }) => {
+  const { errors, adv } = await openGame(page);
+  const frames = {};
+  const snap = async (name) => (frames[name] = await hashCanvases(page));
+  const act = (fn, arg) => page.evaluate(fn, arg);
+
+  await adv(120);
+  await snap('idle');
+  await act(() => {
+    APP.force(3);
+    APP.forceFake = false;
+    APP.beginHold();
+  });
+  await adv(75);
+  await snap('charge');
+  await adv(24);
+  await snap('hitstop');
+  await act(() => APP.endHold());
+  await adv(40);
+  await snap('reveal-legendary');
+  await adv(110);
+  await snap('wall-break');
+  await adv(100);
+  await snap('settled');
+  await act(() => APP.leave());
+  await adv(20);
+  await snap('collect');
+  await adv(80);
+  await act(() => {
+    APP.force(2);
+    APP.forceFake = true;
+    APP.beginHold();
+  });
+  await adv(105);
+  await act(() => APP.endHold());
+  await adv(60);
+  await snap('fake-rare');
+  await adv(150);
+  await snap('upgrade');
+  await adv(80);
+  await snap('epic');
+  expect(errors).toEqual([]);
+
+  if (process.env.UPDATE_GOLDEN || !existsSync(FILE)) {
+    writeFileSync(FILE, JSON.stringify(frames, null, 2) + '\n');
+    test.info().annotations.push({ type: 'golden', description: 'frames.json written' });
+    return;
+  }
+  expect(frames).toEqual(JSON.parse(readFileSync(FILE, 'utf8')));
+});

@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Loot Pixel Vault</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&display=swap" rel="stylesheet" />
+    <!-- Design constraints and the performance budget live in docs/DESIGN.md -->
+  </head>
+  <body>
+    <div id="stage">
+      <canvas id="screen" aria-hidden="true"></canvas><canvas id="bloom" aria-hidden="true"></canvas>
+    </div>
+    <div id="crt"></div>
+    <button id="hit" aria-label="Loot card. Press and hold to open."></button>
+    <button id="again" class="px" type="button">Draw another</button>
+    <button id="mute" class="px" type="button" aria-pressed="false">Sound on</button>
+    <div id="hud">
+      <div class="row" role="group" aria-label="Next card rarity">
+        <span class="lbl">Next:</span>
+        <button class="px pill" data-force="-1" aria-pressed="true">Random</button>
+        <button class="px pill" data-force="0" aria-pressed="false">Common</button>
+        <button class="px pill" data-force="1" aria-pressed="false">Rare</button>
+        <button class="px pill" data-force="2" aria-pressed="false">Epic</button>
+        <button class="px pill" data-force="3" aria-pressed="false">Legend</button>
+        <button id="reset" class="px pill" type="button" disabled aria-label="Reset collection">Reset</button>
+      </div>
+    </div>
+    <div id="live" class="sr" aria-live="polite"></div>
+    <div id="err"></div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
