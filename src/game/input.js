@@ -4,7 +4,7 @@
 import { A, buzz } from '../audio/chip.js';
 import { $, MOTION, clamp, later } from '../core/util.js';
 import { POOL } from '../data/armor.js';
-import { resetBag, syncReset } from './bag.js';
+import { BAG, resetBag, saveBag, syncReset } from './bag.js';
 import { assignCard, fidget, leave } from './flow.js';
 import { CX, CY, SC, again, hit, layout, live } from './layout.js';
 import { S } from './state.js';
@@ -94,7 +94,12 @@ export function initInput() {
       return;
     }
     resetBag();
-    if (S.pending) S.pending.isNew = true;
+    // the revealed or flying piece stays yours: it goes into the fresh collection and lands as NEW
+    if (S.pending) {
+      BAG.owned[POOL[S.pending.i].name] = 1;
+      saveBag();
+      S.pending.isNew = true;
+    }
     b.classList.remove('armed');
     b.textContent = 'Reset';
     syncReset();

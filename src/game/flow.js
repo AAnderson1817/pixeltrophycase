@@ -209,20 +209,20 @@ export function release() {
     });
 }
 function commit(gen) {
-  const nm = S.spec.name,
-    isNew = !BAG.owned[nm];
+  const nm = S.spec.name;
+  S.pending = {
+    i: S.spec.idx,
+    isNew: !BAG.owned[nm],
+  };
   BAG.owned[nm] = (BAG.owned[nm] || 0) + 1;
   saveBag();
   syncReset();
-  const cnt = BAG.owned[nm];
-  S.pending = {
-    i: S.spec.idx,
-    isNew,
-  };
+  // read when it fires: a Reset in between re-adds the pending piece as new (input.js)
   later(1900, () => {
     if (S.phase !== 'revealed' || S.seed !== gen) return;
+    const isNew = S.pending.isNew;
     S.stamp = {
-      text: isNew ? 'NEW!' : 'x' + cnt,
+      text: isNew ? 'NEW!' : 'x' + BAG.owned[nm],
       key: isNew ? 'y' : '4',
       t0: S.rt,
     };
@@ -318,9 +318,13 @@ export function arrive() {
   S.trauma = Math.min(1, S.trauma + 0.15);
   sparks(34, RAR[POOL[i].r].l, 20, 130, 0.45, sl.x + sl.w / 2, sl.y + sl.h / 2, true);
   S.pending = null;
-  const si = POOL[i].set;
-  if (!BAG.complete && shownCount() === POOL.length) later(380, celebrate);
-  else if (!BAG.sets[si] && setDone(si)) later(380, () => celebrateSet(si));
+  // any set complete but not yet flagged (its last piece may have been revealed before a reload), not only this one's;
+  // a Reset before the celebration fires replaces BAG, so it is dropped and the next card still enters
+  const bag = BAG,
+    due = SETS.findIndex((_, k) => !BAG.sets[k] && setDone(k));
+  if (!BAG.complete && shownCount() === POOL.length)
+    later(380, () => (BAG === bag && shownCount() === POOL.length ? celebrate() : startEnter()));
+  else if (due >= 0) later(380, () => (BAG === bag && setDone(due) ? celebrateSet(due) : startEnter()));
   else later(240, startEnter);
 }
 function celebrateSet(si) {
