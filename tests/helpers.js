@@ -30,7 +30,11 @@ export async function openGame(page, { deterministic = true } = {}) {
     };
   }, deterministic);
   await page.goto(process.env.GAME_URL || '/');
-  await page.waitForFunction(() => window.__ready === true);
+  await page
+    .waitForFunction(() => window.__ready === true, null, { timeout: 30_000 })
+    .catch((e) => {
+      throw new Error('game did not boot: ' + (errors.join('; ') || e.message));
+    });
   if (deterministic) {
     await page.evaluate(() => {
       const sim = { t: 0, q: [], id: 0 };

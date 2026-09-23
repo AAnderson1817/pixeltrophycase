@@ -12,4 +12,4 @@ npm install --no-audit --no-fund
 if [ -z "${PLAYWRIGHT_BROWSERS_PATH:-}" ]; then
   npx playwright install chromium
 fi
-python3 -m pip install --quiet --disable-pip-version-check --root-user-action=ignore -r tools/sprites/requirements.txt
+python3 -m pip install --quiet --disable-pip-version-check --root-user-action=ignore -r tools/sprites/requirements.txt -c tools/sprites/constraints.txt

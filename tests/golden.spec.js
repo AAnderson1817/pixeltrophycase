@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { openGame } from './helpers.js';
 
 // Golden frames: the main canvas and the bloom buffer are hashed at fixed points of a scripted, deterministic run.
@@ -66,10 +66,13 @@ test('golden frames', async ({ page }) => {
   await snap('epic');
   expect(errors).toEqual([]);
 
-  if (process.env.UPDATE_GOLDEN || !existsSync(FILE)) {
+  // Re-record only on request (`npm run test:golden:update` passes --update-snapshots); a missing file is a failure.
+  if (['all', 'changed'].includes(test.info().config.updateSnapshots)) {
+    mkdirSync(new URL('./golden/', import.meta.url), { recursive: true });
     writeFileSync(FILE, JSON.stringify(frames, null, 2) + '\n');
-    test.info().annotations.push({ type: 'golden', description: 'frames.json written' });
+    console.log('golden: wrote tests/golden/frames.json');
     return;
   }
+  expect(existsSync(FILE), 'tests/golden/frames.json is missing: run npm run test:golden:update').toBe(true);
   expect(frames).toEqual(JSON.parse(readFileSync(FILE, 'utf8')));
 });

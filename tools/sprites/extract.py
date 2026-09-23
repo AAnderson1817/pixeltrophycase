@@ -140,7 +140,7 @@ def build(preview=True):
         a10 = i10[k]; x10, y10 = k * 10, 6 * CH + 32; atlas.paste(a10, (x10 + (10 - a10.width) // 2, y10 + (10 - a10.height) // 2))
         meta.append(dict(set=SETS.index(p['set']), r=p['r'], name=p['name'], c=[cx, cy, c.width, c.height], i16=[x16, y16], i10=[x10, y10]))
     atlas.save(ATLAS_PNG, optimize=True)
-    with open(ATLAS_JSON, 'w') as f:
+    with open(ATLAS_JSON, 'w', newline='\n') as f:
         f.write('[\n' + ',\n'.join('  ' + json.dumps(m, separators=(', ', ': ')) for m in meta) + '\n]\n')
     if preview:
         bgc = (30, 26, 60, 255)
