@@ -113,6 +113,10 @@ export function voidRows(J, n) {
   return J.done;
 }
 export let snap32 = null;
+/** layout() rebuilt the scene for a new size: the old snapshot no longer matches it (startWallBreak takes a new one). */
+export function resetWallSnap() {
+  snap32 = null;
+}
 export function startWallBreak(r) {
   const B = S.wall;
   if (

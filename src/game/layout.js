@@ -1,14 +1,15 @@
 /**
  * Chooses the integer pixel scale and logical canvas size for the window, then places the card, altar, torches, bag
- * and HTML overlays. Runs at boot and on resize.
+ * and HTML overlays. Runs at boot and on resize; a resize drops the wall-break debris cut from the old scene.
  */
 import { $, clamp } from '../core/util.js';
-import { seedDust } from '../fx/particles.js';
+import { FX, seedDust } from '../fx/particles.js';
 import { bagGeom } from './bag.js';
 import { CHd, CWd, cv, g, stage } from '../gfx/canvas.js';
 import { setupBloom } from '../render/bloom.js';
 import { setupLayers } from '../render/render.js';
 import { buildScene } from '../scene/scene.js';
+import { resetWallSnap } from '../scene/wall.js';
 
 export let NARROW = false,
   BAGY = 4,
@@ -45,8 +46,9 @@ export function layout() {
   const iw = innerWidth,
     ih = innerHeight;
   SC = Math.max(2, Math.floor(Math.min(iw / 128, ih / 228)));
-  W = Math.ceil(iw / SC);
-  H = Math.ceil(ih / SC);
+  // at least 1x1: a hidden or collapsed host frame reports 0, and a 0-sized canvas or ImageData throws
+  W = Math.max(1, Math.ceil(iw / SC));
+  H = Math.max(1, Math.ceil(ih / SC));
   for (const c of [cv]) {
     c.width = W;
     c.height = H;
@@ -101,6 +103,12 @@ export function layout() {
     },
   ];
   buildScene();
+  // the rebuilt scene ends any wall break; debris, dust and card shards were cut from the old scene or land on the
+  // old floor, so they go with it
+  resetWallSnap();
+  FX.bricks.length = 0;
+  FX.tiles.length = 0;
+  FX.dustp.length = 0;
   seedDust();
   hit.style.left = (CX - CWd / 2) * SC + 'px';
   hit.style.top = (CY - CHd / 2) * SC + 'px';

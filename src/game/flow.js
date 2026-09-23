@@ -8,9 +8,9 @@ import { MOTION, TAU, later, reduce, ri, rnd } from '../core/util.js';
 import { POOL, RAR, SETS } from '../data/armor.js';
 import { FX, Q, bolt, coins, confetti, gy, ring, shatter, sparks } from '../fx/particles.js';
 import { BAG, flashAll, saveBag, setDone, shownCount, slotFlash, slotRect, slotShown, syncReset } from './bag.js';
-import { CX, CY, TORCH, again, hit, live } from './layout.js';
+import { TORCH, again, hit, live } from './layout.js';
 import { S } from './state.js';
-import { CHd, backC, frontC } from '../gfx/canvas.js';
+import { backC, frontC } from '../gfx/canvas.js';
 import { SCN } from '../scene/scene.js';
 import { makeVoidJob, startWallBreak, wallRebuild } from '../scene/wall.js';
 
@@ -286,13 +286,10 @@ export function fidget() {
 }
 export function leave() {
   if (S.phase !== 'revealed' || S.fake) return;
-  const i = S.pending ? S.pending.i : 0,
-    sl = slotRect(i);
+  const i = S.pending ? S.pending.i : 0;
+  // no target stored: sim.js aims at slotRect(i) every step, so the flight follows the bag through a resize
   S.col = {
     t: 0,
-    tx: sl.x + sl.w / 2 - CX,
-    ty: sl.y + sl.h / 2 - CY,
-    s1: sl.h / CHd,
     dir: Math.random() < 0.5 ? -1 : 1,
     done: false,
     i,

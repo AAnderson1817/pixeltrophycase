@@ -9,11 +9,12 @@ import { DN } from '../core/perf.js';
 import { MOTION, TAU, lerp, reduce, rnd } from '../core/util.js';
 import { RAR } from '../data/armor.js';
 import { FX, bolt, prune, ring, sparks } from '../fx/particles.js';
-import { fadeFlashes } from './bag.js';
+import { fadeFlashes, slotRect } from './bag.js';
 import { aftershock, arrive, assignCard, burst, teaseUp } from './flow.js';
 import { beginHold } from './input.js';
 import { CX, CY, HY, NARROW, PTOP, TORCH, W } from './layout.js';
 import { S, tens } from './state.js';
+import { CHd } from '../gfx/canvas.js';
 import { SCN } from '../scene/scene.js';
 import { dustAt, voidRows } from '../scene/wall.js';
 
@@ -177,12 +178,16 @@ export function step(dt, rdt) {
   if (S.phase === 'collecting') {
     const C = S.col;
     C.t = Math.min(1, C.t + rdt / 0.7);
-    const t = C.t,
+    // the target is re-read every step: a resize mid-flight moves the card centre and the bag
+    const sl = slotRect(C.i),
+      tx = sl.x + sl.w / 2 - CX,
+      ty = sl.y + sl.h / 2 - CY,
+      t = C.t,
       e = t < 0.2 ? -0.08 * Math.sin((t / 0.2) * Math.PI) : Math.pow((t - 0.2) / 0.8, 2),
       u = Math.max(0, e);
-    S.pos.x = 2 * (1 - u) * u * C.dir * 50 + u * u * C.tx;
-    S.pos.y = 2 * (1 - u) * u * -60 + u * u * C.ty + (e < 0 ? -e * 50 : 0);
-    S.colScale = Math.max(0.08, lerp(1, C.s1, u) * (e < 0 ? 1 + e : 1));
+    S.pos.x = 2 * (1 - u) * u * C.dir * 50 + u * u * tx;
+    S.pos.y = 2 * (1 - u) * u * -60 + u * u * ty + (e < 0 ? -e * 50 : 0);
+    S.colScale = Math.max(0.08, lerp(1, sl.h / CHd, u) * (e < 0 ? 1 + e : 1));
     S.colSpin = C.dir * u * TAU * 1.5;
     if (t >= 1 && !C.done) {
       C.done = true;
