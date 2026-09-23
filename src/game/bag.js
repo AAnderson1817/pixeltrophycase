@@ -16,6 +16,12 @@ try {
   if (v && v.owned) {
     BAG = v;
     BAG.sets = BAG.sets || {};
+    // flags must agree with owned: older builds could save set/complete flags on a bag emptied by a reset
+    const has = (c) => BAG.owned[c.name];
+    SETS.forEach((_, k) => {
+      if (BAG.sets[k] && !POOL.every((c) => c.set !== k || has(c))) delete BAG.sets[k];
+    });
+    if (BAG.complete && !POOL.every(has)) BAG.complete = false;
   }
 } catch {}
 export const saveBag = () => {

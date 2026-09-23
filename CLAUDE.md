@@ -72,7 +72,7 @@ Phase machine (`S.phase`): `entering → idle → hitstop → revealed → (upgr
 
 ## Test hooks (`window.APP`)
 
-`S` (state), `force(r)` (0–3 rarity, -1 random), `forceFake` (bool), `forceCard` (piece name), `step(dt)` (one tick + render), `render()`, `beginHold()`, `endHold()`, `leave()` (collect/dismiss), `FX`, `PERF`, `PACE`, `POOL`, `layout()` (read-only snapshot), `paused`, `noProbe`, `noR`. `window.__ready` is set at the end of `boot()`.
+`S` (state), `force(r)` (0–3 rarity, -1 random), `forceFake` (bool), `forceCard` (piece name), `step(dt)` (one tick + render), `render()`, `beginHold()` (no input source: ignored during the summon, unlike a real press, which is queued), `endHold()` (ends any hold), `leave()` (collect/dismiss), `FX`, `PERF`, `PACE`, `POOL`, `layout()` (read-only snapshot), `paused`, `noProbe`, `noR`. `window.__ready` is set at the end of `boot()`.
 
 `tests/helpers.js#openGame` makes runs deterministic: no audio, seeded `Math.random` (LCG, seed 777), no rAF, simulated `setTimeout` clock advanced by `window.__adv(frames)` at 1/60 s.
 

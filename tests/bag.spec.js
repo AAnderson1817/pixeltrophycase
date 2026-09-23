@@ -140,3 +140,25 @@ test('reset while a revealed piece is on screen: the piece stays in the fresh ba
   expect(await page.evaluate(() => window.APP.S.phase)).toBe('entering');
   expect(errors).toEqual([]);
 });
+
+test('reset after the stamp is up: the stamp switches to NEW!', async ({ page }) => {
+  const { errors, adv } = await openGame(page);
+  await adv(90);
+  await collect(page, adv, 'SOLAR BOOTS');
+  await reveal(page, adv, 'SOLAR BOOTS');
+  await adv(130);
+  expect(await page.evaluate(() => window.APP.S.stamp)).toMatchObject({ text: 'x2', key: '4' });
+  await confirmReset(page);
+  expect(await page.evaluate(() => window.APP.S.stamp)).toMatchObject({ text: 'NEW!', key: 'y' });
+  expect(errors).toEqual([]);
+});
+
+test('set and collection flags saved on a bag that does not own those pieces are dropped on load', async ({ page }) => {
+  // what the old reset/celebration race left behind: SOLAR really complete, ECLIPSE and "complete" flagged falsely
+  const owned = Object.fromEntries(SOLAR.map((n) => [n, 1]));
+  const { errors, adv } = await openWithBag(page, { owned, complete: true, sets: { 0: true, 1: true } });
+  await adv(90);
+  await collect(page, adv, 'RAVEN BOOTS');
+  expect(await savedBag(page)).toEqual({ owned: { ...owned, 'RAVEN BOOTS': 1 }, complete: false, sets: { 0: true } });
+  expect(errors).toEqual([]);
+});

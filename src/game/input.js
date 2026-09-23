@@ -1,6 +1,6 @@
 /**
  * Pointer, keyboard and HUD buttons (rarity pills, two-press reset, mute). A hold belongs to the source that started
- * it (a pointerId, or KEY for Space/Enter) and only that source's release ends it; losing focus or hiding the page
+ * it (a pointerId, or the key code for Space/Enter) and only that source's release ends it; losing focus or hiding the page
  * ends any hold. A press made during the summon is queued, and sim.js turns it into a hold when the card lands.
  */
 import { A, buzz } from '../audio/chip.js';
@@ -12,10 +12,9 @@ import { CX, CY, SC, again, hit, layout, live } from './layout.js';
 import { S } from './state.js';
 import { CHd, CWd } from '../gfx/canvas.js';
 
-const KEY = 'key';
-// src: the pointerId or KEY pressing. The APP.beginHold() hook passes none and is not queued during the summon
-// (the golden script presses there and its frames depend on that press being dropped).
-export function beginHold(src) {
+// src: the pointerId or key code pressing. The APP.beginHold() hook passes none and is not queued during the summon.
+// queued: sim.js starting a hold that was pressed during the summon (the tap timer runs from that press).
+export function beginHold(src, queued = false) {
   A.init();
   if (S.phase === 'revealed') {
     fidget();
@@ -25,13 +24,14 @@ export function beginHold(src) {
   if (S.phase === 'entering' && src !== undefined) {
     S.queued = true;
     S.holdSrc = src;
+    S.downAt = S.rt;
     return;
   }
   if (S.phase !== 'idle') return;
   if (S.r < 0) assignCard();
   S.holding = true;
   S.holdSrc = src;
-  S.downAt = S.rt;
+  if (!queued) S.downAt = S.rt;
   S.sq.v = -2.8 * MOTION;
   A.press();
   buzz(6);
@@ -40,6 +40,7 @@ export function beginHold(src) {
 export function endHold(src) {
   if (src !== undefined && src !== S.holdSrc) return;
   S.queued = false;
+  S.holdSrc = null;
   if (!S.holding) return;
   S.holding = false;
   if (S.phase !== 'idle') return;
@@ -76,11 +77,11 @@ export function initInput() {
       if (S.phase === 'revealed') {
         A.init();
         leave();
-      } else beginHold(KEY);
+      } else beginHold(e.code);
     }
   });
   window.addEventListener('keyup', (e) => {
-    if (e.code === 'Space' || e.code === 'Enter') endHold(KEY);
+    if (e.code === 'Space' || e.code === 'Enter') endHold(e.code);
   });
   again.addEventListener('click', () => {
     A.init();
@@ -124,6 +125,7 @@ export function initInput() {
       BAG.owned[POOL[S.pending.i].name] = 1;
       saveBag();
       S.pending.isNew = true;
+      if (S.stamp) Object.assign(S.stamp, { text: 'NEW!', key: 'y' });
     }
     b.classList.remove('armed');
     b.textContent = 'Reset';

@@ -54,6 +54,20 @@ test('audio is suspended, and the charge voices stopped, while the page is hidde
   await setHidden(page, false);
   await page.waitForFunction(() => window.__ac.state === 'running', null, { timeout: 5000 });
 
+  // hidden again while the resume is still in flight (e.g. Ctrl+Tab past the tab): it must still end up suspended
+  await setHidden(page, true);
+  await page.waitForFunction(() => window.__ac.state === 'suspended', null, { timeout: 5000 });
+  await page.evaluate(() => {
+    for (const h of [false, true]) {
+      Object.defineProperty(document, 'hidden', { configurable: true, get: () => h });
+      document.dispatchEvent(new Event('visibilitychange'));
+    }
+  });
+  await page.waitForTimeout(300);
+  expect(await page.evaluate(() => window.__ac.state)).toBe('suspended');
+  await setHidden(page, false);
+  await page.waitForFunction(() => window.__ac.state === 'running', null, { timeout: 5000 });
+
   // pagehide suspends too; a context that was already suspended is not resumed by becoming visible
   await page.evaluate(() => window.dispatchEvent(new PageTransitionEvent('pagehide', { persisted: true })));
   await page.waitForFunction(() => window.__ac.state === 'suspended', null, { timeout: 5000 });

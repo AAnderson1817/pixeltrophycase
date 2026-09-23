@@ -72,6 +72,21 @@ test('a keyboard hold ends only on the key release, not on a click elsewhere', a
   expect(errors).toEqual([]);
 });
 
+test('Space and Enter are separate holds: releasing one does not end the other', async ({ page }) => {
+  const { errors, adv } = await openGame(page);
+  await adv(90);
+  await page.locator('#hit').focus();
+  await page.keyboard.down('Space');
+  await adv(20);
+  await page.keyboard.down('Enter');
+  await page.keyboard.up('Enter');
+  await adv(5);
+  expect(await hold(page)).toMatchObject({ phase: 'idle', holding: true, auto: false });
+  await page.keyboard.up('Space');
+  expect(await hold(page)).toMatchObject({ phase: 'idle', holding: false, auto: false });
+  expect(errors).toEqual([]);
+});
+
 test('a hold ends when the window loses focus', async ({ page }) => {
   const { errors, adv } = await openGame(page);
   await adv(90);
@@ -164,5 +179,22 @@ test('tap versus hold is timed on the game clock, not on wall-clock time', async
     return window.APP.S.auto;
   });
   expect(tapped).toBe(true);
+  expect(errors).toEqual([]);
+});
+
+test('a press held through the summon is not a tap, however soon after the landing it is released', async ({
+  page,
+}) => {
+  const { errors, adv } = await openGame(page);
+  await adv(20);
+  expect(await hold(page)).toMatchObject({ phase: 'entering' });
+  await pointAtCard(page);
+  await page.mouse.down();
+  await page.evaluate(() => {
+    for (let i = 0; i < 600 && window.APP.S.phase !== 'idle'; i++) window.__adv(1);
+    window.__adv(3); // released 0.05 s after the landing, well over 0.24 s after the press
+  });
+  await page.mouse.up();
+  expect(await hold(page)).toMatchObject({ phase: 'idle', holding: false, auto: false });
   expect(errors).toEqual([]);
 });

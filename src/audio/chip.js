@@ -10,6 +10,7 @@ export const A = {
   charging: false,
   ch: null,
   asleep: false,
+  waking: false,
   lastClink: 0,
   init() {
     if (this.ctx) {
@@ -77,16 +78,24 @@ export const A = {
   },
   // Hidden tab: rAF stops but the context would keep playing the drone and a held charge tone. The charge voices are
   // stopped (sim.js restarts them if the hold is still on); only a context that was running is resumed.
+  // A resume still in flight counts as running: hidden again before it settles, the context still ends up suspended.
   sleep() {
-    if (!this.ctx || this.ctx.state !== 'running') return;
+    if (!this.ctx || (this.ctx.state !== 'running' && !this.waking)) return;
     this.asleep = true;
+    this.waking = false;
     this.chargeStop();
     this.ctx.suspend();
   },
   wake() {
     if (!this.asleep) return;
     this.asleep = false;
-    this.ctx.resume();
+    this.waking = true;
+    // Chrome ignores suspend() while a resume is pending, so a sleep() in that window suspends once it settles
+    const done = () => {
+      this.waking = false;
+      if (this.asleep) this.ctx.suspend();
+    };
+    this.ctx.resume().then(done, done);
   },
   setOn(v) {
     this.on = v;

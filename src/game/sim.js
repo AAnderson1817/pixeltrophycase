@@ -100,6 +100,7 @@ export function step(dt, rdt) {
     if (c >= 1) burst();
   } else if (S.phase === 'upgrading') {
     S.up = Math.min(1, S.up + rdt / 1.5);
+    if (!A.charging) A.chargeStart(); // stopped while the page was hidden
     A.chargeUpdate(S.up, S.rt);
     S.glitch = 0.2 + S.up * 0.8;
     tension(S.up, rdt, true, frontCracks);
@@ -171,7 +172,7 @@ export function step(dt, rdt) {
       if (S.queued) {
         // pressed during the summon and still held: the hold starts now
         S.queued = false;
-        beginHold(S.holdSrc);
+        beginHold(S.holdSrc, true);
       }
     }
   }

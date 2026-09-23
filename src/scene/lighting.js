@@ -29,7 +29,8 @@ import {
   toneF,
 } from './scene.js';
 
-// Same light model as before; light is computed per unit once, then pixels only do table lookups. No allocations.
+// Same light model as before; light is computed per unit once, then pixels only do table lookups. No typed-array or
+// object allocation per unit or pixel (the light/repaint closures are still created once per frame).
 const RF = new Uint32Array(28),
   CL7 = new Uint8Array(40);
 for (let i = 0; i < 40; i++) CL7[i] = clamp(i - 16, 0, 6);
