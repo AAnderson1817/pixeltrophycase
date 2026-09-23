@@ -1,6 +1,6 @@
 /**
  * Chip-tune audio: every sound is synthesised with Web Audio (25% pulse, square, triangle, noise) through a short
- * dungeon echo. The context starts on the first user gesture.
+ * dungeon echo. The context starts on the first user gesture and is suspended while the page is hidden.
  */
 import { reduce, rnd } from '../core/util.js';
 
@@ -9,6 +9,7 @@ export const A = {
   on: true,
   charging: false,
   ch: null,
+  asleep: false,
   lastClink: 0,
   init() {
     if (this.ctx) {
@@ -68,9 +69,24 @@ export const A = {
       for (let n = 1; n < 32; n++) imag[n] = (2 / (n * Math.PI)) * Math.sin(n * Math.PI * 0.25);
       this.pulse25 = c.createPeriodicWave(real, imag);
       this.ambStart();
+      document.addEventListener('visibilitychange', () => (document.hidden ? this.sleep() : this.wake()));
+      window.addEventListener('pagehide', () => this.sleep());
     } catch {
       this.ctx = null;
     }
+  },
+  // Hidden tab: rAF stops but the context would keep playing the drone and a held charge tone. The charge voices are
+  // stopped (sim.js restarts them if the hold is still on); only a context that was running is resumed.
+  sleep() {
+    if (!this.ctx || this.ctx.state !== 'running') return;
+    this.asleep = true;
+    this.chargeStop();
+    this.ctx.suspend();
+  },
+  wake() {
+    if (!this.asleep) return;
+    this.asleep = false;
+    this.ctx.resume();
   },
   setOn(v) {
     this.on = v;

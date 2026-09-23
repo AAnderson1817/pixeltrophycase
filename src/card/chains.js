@@ -2,7 +2,7 @@
  * Chains and padlock over the card back, cached link sprites, chain snapping, and the summon dissolve.
  */
 import { A, buzz } from '../audio/chip.js';
-import { PAL, RAMPS, bay } from '../core/palette.js';
+import { PAL, RAMPS, U32, bay } from '../core/palette.js';
 import { MOTION, ri, rnd } from '../core/util.js';
 import { RAR } from '../data/armor.js';
 import { FX, gy, sparks } from '../fx/particles.js';
@@ -159,18 +159,15 @@ export function snapChain(i) {
 }
 export function dissolve(src, p) {
   const img = src.getContext('2d').getImageData(0, 0, CWd, CHd),
-    d = img.data;
+    d = img.data,
+    d32 = new Uint32Array(d.buffer);
   for (let y = 0; y < CHd; y++)
     for (let x = 0; x < CWd; x++) {
       const o = (y * CWd + x) * 4;
       if (!d[o + 3]) continue;
       const th = bay(x, y) * 0.3 + (1 - y / CHd) * 0.7;
       if (th > p) d[o + 3] = 0;
-      else if (th > p - 0.07) {
-        d[o] = 255;
-        d[o + 1] = 255;
-        d[o + 2] = 255;
-      }
+      else if (th > p - 0.07) d32[o >> 2] = U32.w;
     }
   dissG.putImageData(img, 0, 0);
   return dissC;

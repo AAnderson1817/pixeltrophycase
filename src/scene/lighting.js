@@ -40,9 +40,9 @@ const TX = new Float64Array(4),
 const RG_R = new Float64Array(32),
   RG_W = new Float64Array(32),
   RG_C = new Uint32Array(32);
-let LC = 0,
-  LW = 0,
-  INB = false;
+// light() returns card and warm (torch) light through LV: a double in a module-level let is heap-boxed on each write
+const LV = new Float64Array(2);
+let INB = false;
 export function lightPass(ox, oy) {
   const cx = S.cx,
     cy = S.cy,
@@ -91,8 +91,8 @@ export function lightPass(ox, oy) {
       lc += beam * (1 - Math.abs(dxc) / bw) * 1.1;
       INB = true;
     }
-    LC = lc;
-    LW = lw;
+    LV[0] = lc;
+    LV[1] = lw;
   };
   const B32 = BASE32,
     V = SCN.VOID32,
@@ -125,10 +125,12 @@ export function lightPass(ox, oy) {
     const x = UX[u],
       y = UY[u];
     light(x, y);
-    const L = amb + LW + LC;
+    const lc = LV[0],
+      lw = LV[1],
+      L = amb + lw + lc;
     let lvl = toneF(UALB[u] * L);
     const h = UHASH[u];
-    let sel = INB || LC / L > 0.2 + 0.5 * h ? 2 : LW / L > 0.26 + 0.44 * h ? 1 : 0;
+    let sel = INB || lc / L > 0.2 + 0.5 * h ? 2 : lw / L > 0.26 + 0.44 * h ? 1 : 0;
     if (rays > 0.02) {
       const a = Math.atan2(y - cy, x - cx) + rayA,
         sec = ((a % per) + per) % per;
@@ -171,10 +173,12 @@ export function lightPass(ox, oy) {
       y = (i / W) | 0,
       x = i - y * W;
     light(x, y);
-    const L = amb + LW + LC,
+    const lc = LV[0],
+      lw = LV[1],
+      L = amb + lw + lc,
       l = toneF(PIXA[i] * L),
       b2 = BAYER[((y + 2) & 3) * 4 + ((x + 1) & 3)];
-    S32[i] = (LC / L > 0.2 + 0.5 * b2 ? cRamp : LW / L > 0.3 + 0.4 * b2 ? warmR : stoneR)[l];
+    S32[i] = (lc / L > 0.2 + 0.5 * b2 ? cRamp : lw / L > 0.3 + 0.4 * b2 ? warmR : stoneR)[l];
   }
   // shock rings: only the annulus is visited; later rings first so the earliest ring wins, as before
   let nr = 0;

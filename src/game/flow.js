@@ -14,6 +14,12 @@ import { backC, frontC } from '../gfx/canvas.js';
 import { SCN } from '../scene/scene.js';
 import { makeVoidJob, startWallBreak, wallRebuild } from '../scene/wall.js';
 
+// "Draw another" is inert while hidden: opacity 0 alone would leave an invisible tab stop in the accessibility tree.
+function showAgain(on) {
+  again.classList.toggle('show', on);
+  again.inert = !on;
+}
+
 function pickRarity() {
   if (S.force >= 0) return S.force;
   let u = Math.random();
@@ -201,7 +207,7 @@ export function release() {
       if (S.phase === 'revealed' && S.seed === gen) startWallBreak(S.vr);
     });
     later(1000, () => {
-      if (S.phase === 'revealed' && S.seed === gen) again.classList.add('show');
+      if (S.phase === 'revealed' && S.seed === gen) showAgain(true);
     });
   } else
     later(2200, () => {
@@ -243,7 +249,7 @@ function startUpgrade() {
   S.lightKey = RAR[S.r].ramp;
   S.raysT = 0;
   S.beam = 0;
-  again.classList.remove('show');
+  showAgain(false);
   if (S.title) S.title.quake = 1;
   A.glitch();
   A.chargeStart();
@@ -295,7 +301,7 @@ export function leave() {
     i,
   };
   S.phase = 'collecting';
-  again.classList.remove('show');
+  showAgain(false);
   S.title = null;
   S.stamp = null;
   S.raysT = 0;

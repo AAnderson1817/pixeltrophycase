@@ -140,7 +140,6 @@ export function initInput() {
     const on = !A.on;
     A.setOn(on);
     e.currentTarget.textContent = on ? 'Sound on' : 'Sound off';
-    e.currentTarget.setAttribute('aria-pressed', String(!on));
   });
   window.addEventListener('resize', layout);
 }
