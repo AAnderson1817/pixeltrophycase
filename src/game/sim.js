@@ -82,6 +82,7 @@ function tension(c, rdt, want, cracks) {
     }
   }
 }
+const SL = { x: 0, y: 0, w: 0, h: 0 }; // collect-flight target, refilled every step
 export function step(dt, rdt) {
   S.t += dt;
   if (S.phase === 'idle') {
@@ -180,7 +181,7 @@ export function step(dt, rdt) {
     const C = S.col;
     C.t = Math.min(1, C.t + rdt / 0.7);
     // the target is re-read every step: a resize mid-flight moves the card centre and the bag
-    const sl = slotRect(C.i),
+    const sl = slotRect(C.i, SL),
       tx = sl.x + sl.w / 2 - CX,
       ty = sl.y + sl.h / 2 - CY,
       t = C.t,

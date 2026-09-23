@@ -68,7 +68,7 @@ Phase machine (`S.phase`): `entering → idle → hitstop → revealed → (upgr
 - **Timers use `later()`** (wraps `setTimeout`): the deterministic test harness replaces `setTimeout`, so anything on `requestAnimationFrame` timing or `performance.now()` alone will not be stepped in tests.
 - **Determinism in tests** relies on `Math.random` being the only randomness source (plus `mulberry` streams seeded from card seeds or constants). Do not add `crypto.getRandomValues` or `Date`-seeded randomness.
 
-`npm run lint` enforces the checkable part in `src/`: timers only through `later()`, `requestAnimationFrame` only in `game/loop.js`, no `Date`/`crypto` randomness, no hex colour literals outside `core/palette.js`, canvases only from `mk()`.
+`npm run lint` enforces the checkable part in `src/` (bare or `window.`/`globalThis.`-qualified): timers only through `later()`, `requestAnimationFrame` only in `game/loop.js`, no `Date`/`crypto` randomness, no hex colour literals outside `core/palette.js`, canvases only from `mk()`.
 
 ## Test hooks (`window.APP`)
 

@@ -36,15 +36,16 @@ export function beginHold(src, queued = false) {
   A.press();
   buzz(6);
 }
-// Without a source (the APP hook, blur, hidden page) it ends whatever hold or queued press there is.
-export function endHold(src) {
+// Without a source (the APP hook, blur, hidden page) it ends whatever hold or queued press there is. cancel (focus
+// lost, pointer taken by the browser) is not a release: it never counts as a tap, so the card cannot open by itself.
+export function endHold(src, cancel = false) {
   if (src !== undefined && src !== S.holdSrc) return;
   S.queued = false;
   S.holdSrc = null;
   if (!S.holding) return;
   S.holding = false;
   if (S.phase !== 'idle') return;
-  if (S.rt - S.downAt < 0.24 && S.charge < 0.35) S.auto = true;
+  if (!cancel && S.rt - S.downAt < 0.24 && S.charge < 0.35) S.auto = true;
   else if (S.charge < 1) S.sq.v += 2.8 * MOTION;
 }
 let resetArm = 0;
@@ -54,12 +55,11 @@ export function initInput() {
     hit.setPointerCapture?.(e.pointerId);
     beginHold(e.pointerId);
   });
-  const lift = (e) => endHold(e.pointerId);
-  window.addEventListener('pointerup', lift);
-  window.addEventListener('pointercancel', lift);
-  window.addEventListener('blur', () => endHold());
+  window.addEventListener('pointerup', (e) => endHold(e.pointerId));
+  window.addEventListener('pointercancel', (e) => endHold(e.pointerId, true));
+  window.addEventListener('blur', () => endHold(undefined, true));
   document.addEventListener('visibilitychange', () => {
-    if (document.hidden) endHold();
+    if (document.hidden) endHold(undefined, true);
   });
   window.addEventListener('pointermove', (e) => {
     const cx = CX * SC,
@@ -130,7 +130,7 @@ export function initInput() {
     b.classList.remove('armed');
     b.textContent = 'Reset';
     syncReset();
-    live.textContent = 'Collection reset: 0 of ' + POOL.length;
+    live.textContent = 'Collection reset: ' + Object.keys(BAG.owned).length + ' of ' + POOL.length;
     A.rebuild();
     buzz([20, 30, 20]);
     hit.focus({

@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { openGame, collect } from './helpers.js';
+import { openGame, collect, savedBag } from './helpers.js';
 
 // Hold input: who owns a hold, what ends it, presses made during the summon, tap detection, rarity pills.
 
@@ -72,6 +72,31 @@ test('a keyboard hold ends only on the key release, not on a click elsewhere', a
   expect(errors).toEqual([]);
 });
 
+test('losing focus or hiding the page right after a press cancels it: the card does not open by itself', async ({
+  page,
+}) => {
+  const { errors, adv } = await openGame(page);
+  await adv(90);
+  await pointAtCard(page);
+  await page.mouse.down();
+  await adv(5); // 0.08 s: a release now would be a tap
+  await page.evaluate(() => window.dispatchEvent(new Event('blur')));
+  await adv(150);
+  expect(await hold(page)).toMatchObject({ phase: 'idle', holding: false, auto: false, charge: 0 });
+  await page.mouse.up();
+
+  await page.locator('#hit').focus();
+  await page.keyboard.down('Space');
+  await adv(3);
+  await page.evaluate(() => {
+    Object.defineProperty(document, 'hidden', { configurable: true, get: () => true });
+    document.dispatchEvent(new Event('visibilitychange'));
+  });
+  await adv(150);
+  expect(await hold(page)).toMatchObject({ phase: 'idle', holding: false, auto: false, charge: 0 });
+  expect(errors).toEqual([]);
+});
+
 test('Space and Enter are separate holds: releasing one does not end the other', async ({ page }) => {
   const { errors, adv } = await openGame(page);
   await adv(90);
@@ -131,8 +156,11 @@ test('a press made during the summon becomes a hold when the card lands, if stil
   expect(await hold(page)).toMatchObject({ phase: 'idle', holding: false, auto: false });
   await adv(60);
 
-  // Space pressed and released mid-summon: nothing is held when the card lands
+  // Space pressed and released mid-summon: nothing is held when the card lands. The drained hold above left its card
+  // assigned; the Random pill clears it so collect() deals the named piece.
+  await page.locator('.pill[data-force="-1"]').click();
   await collect(page, adv, 'SOLAR BOOTS', { settle: 70 });
+  expect((await savedBag(page)).owned).toEqual({ 'SOLAR BOOTS': 1 });
   expect(await hold(page)).toMatchObject({ phase: 'entering' });
   await page.locator('#hit').focus();
   await page.keyboard.press('Space');

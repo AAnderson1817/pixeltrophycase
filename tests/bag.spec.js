@@ -53,11 +53,12 @@ async function openWithBag(page, bag) {
   return openGame(page);
 }
 
-async function confirmReset(page) {
+/** Confirms Reset; `kept` is how many pieces the fresh bag holds (a revealed or flying piece is kept). */
+async function confirmReset(page, kept = 0) {
   const reset = page.locator('#reset');
   await reset.click();
   await reset.click();
-  await expect(page.locator('#live')).toHaveText('Collection reset: 0 of 30');
+  await expect(page.locator('#live')).toHaveText(`Collection reset: ${kept} of 30`);
 }
 
 test('reset right after the set-completing piece lands: the fresh bag gets no set flag and the next card enters', async ({
@@ -129,7 +130,7 @@ test('reset while a revealed piece is on screen: the piece stays in the fresh ba
   await collect(page, adv, 'SOLAR BOOTS');
   await reveal(page, adv, 'SOLAR BOOTS');
   expect((await savedBag(page)).owned).toEqual({ 'SOLAR BOOTS': 3 });
-  await confirmReset(page); // before the stamp, which would have said x3
+  await confirmReset(page, 1); // before the stamp, which would have said x3
   expect(await savedBag(page)).toEqual({ owned: { 'SOLAR BOOTS': 1 }, complete: false, sets: {} });
   await expect(page.locator('#reset')).toBeEnabled();
   await adv(130);
@@ -148,7 +149,7 @@ test('reset after the stamp is up: the stamp switches to NEW!', async ({ page })
   await reveal(page, adv, 'SOLAR BOOTS');
   await adv(130);
   expect(await page.evaluate(() => window.APP.S.stamp)).toMatchObject({ text: 'x2', key: '4' });
-  await confirmReset(page);
+  await confirmReset(page, 1);
   expect(await page.evaluate(() => window.APP.S.stamp)).toMatchObject({ text: 'NEW!', key: 'y' });
   expect(errors).toEqual([]);
 });

@@ -56,16 +56,16 @@ export function bagGeom(slot) {
     h: rows * (slot + 3) - 1,
   };
 }
-export function slotRect(i) {
+// o: optional object to fill instead of allocating one (per-frame callers)
+export function slotRect(i, o = {}) {
   const c = POOL[i],
     col = c.set % BG.gpr,
     row = Math.floor(c.set / BG.gpr);
-  return {
-    x: BAGX + col * (BG.gw + BG.gg) + c.k * (SLOT + 2),
-    y: BAGY + row * (SLOT + 3),
-    w: SLOT,
-    h: SLOT,
-  };
+  o.x = BAGX + col * (BG.gw + BG.gg) + c.k * (SLOT + 2);
+  o.y = BAGY + row * (SLOT + 3);
+  o.w = SLOT;
+  o.h = SLOT;
+  return o;
 }
 export const setDone = (si) => POOL.every((c, k) => c.set !== si || slotShown[k]);
 export function resetBag() {

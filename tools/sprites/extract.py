@@ -22,7 +22,8 @@ OUTLINE = (7, 6, 15)
 
 # rarity: 0 common, 1 rare, 2 epic, 3 legendary.  box = (x0,y0,x1,y1) in sheet pixels.
 # keep: 'largest' | 'all' | int (n largest components).  rot: degrees counter-clockwise.
-# erase: sheet-space rects dropped before the flood fill.  fill: fill holes in the mask.  sat: saturation (default 1.12).
+# erase: sheet-space rects dropped from the mask after background removal, before the component pick (keep).
+# fill: fill holes in the mask.  sat: saturation (default 1.12).
 PIECES = [
   # SOLAR (crimson sun)
   dict(set='solar', r=0, name='SOLAR BOOTS',  box=(1252, 500, 1380, 632), keep='largest'),
