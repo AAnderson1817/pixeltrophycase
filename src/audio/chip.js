@@ -68,7 +68,7 @@ export const A = {
       for (let n = 1; n < 32; n++) imag[n] = (2 / (n * Math.PI)) * Math.sin(n * Math.PI * 0.25);
       this.pulse25 = c.createPeriodicWave(real, imag);
       this.ambStart();
-    } catch (e) {
+    } catch {
       this.ctx = null;
     }
   },
@@ -469,5 +469,5 @@ export const A = {
 export const buzz = (p) => {
   try {
     if (!reduce && A.ctx && navigator.vibrate) navigator.vibrate(p);
-  } catch (e) {}
+  } catch {}
 };

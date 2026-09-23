@@ -249,8 +249,7 @@ export function render() {
       sqy = 1 - S.sq.x * 0.6;
     const shine = showFront ? (S.vr >= 1 ? 0.9 : 0.5) : 0.35;
     if (S.glow > 0.05) {
-      const gw = Math.round(1 + 5 * S.glow),
-        w = Math.round(CWd * sc * Math.max(0.15, Math.abs(Math.cos(ry)))),
+      const w = Math.round(CWd * sc * Math.max(0.15, Math.abs(Math.cos(ry)))),
         h = Math.round(CHd * sc);
       const x = S.cx - Math.round(w / 2) + ox + jx,
         y = S.cy - Math.round(h / 2) + oy + jy;
@@ -280,7 +279,7 @@ export function render() {
     );
   }
   if (S.phase === 'hitstop') {
-    renderImpact(ox, oy);
+    renderImpact();
     return;
   }
   // tiles (rotated nearest-neighbour)
@@ -480,12 +479,12 @@ export function render() {
   bloomCopy();
   stage.style.transform = Math.abs(S.zoom.x - 1) > 0.0005 ? `scale(${S.zoom.x.toFixed(4)})` : '';
 }
-function renderImpact(ox, oy) {
+function renderImpact() {
   const e = 1 - S.hitstop / S.hitstopDur;
   if (e < 0.22) {
     g.drawImage(layerC, 0, 0);
     g.globalCompositeOperation = 'difference';
-    g.fillStyle = '#fff';
+    g.fillStyle = PAL.w;
     g.fillRect(0, 0, W, H);
     g.globalCompositeOperation = 'source-over';
   } else {

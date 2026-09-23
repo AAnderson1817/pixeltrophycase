@@ -7,16 +7,13 @@ import { MOTION, ri, rnd } from '../core/util.js';
 import { RAR } from '../data/armor.js';
 import { FX, gy, sparks } from '../fx/particles.js';
 import { S } from '../game/state.js';
-import { CHd, CWd, dissC, dissG } from '../gfx/canvas.js';
+import { CHd, CWd, dissC, dissG, mk } from '../gfx/canvas.js';
 import { txCache } from '../gfx/text.js';
 
 function rectCanvas(rows, mirror) {
   const h = rows.length,
     w = rows[0].length,
-    c = document.createElement('canvas');
-  c.width = w;
-  c.height = h;
-  const x = c.getContext('2d');
+    [c, x] = mk(w, h);
   rows.forEach((row, y) => {
     for (let i = 0; i < w; i++) {
       const ch = row[mirror ? w - 1 - i : i];

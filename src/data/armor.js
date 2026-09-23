@@ -4,6 +4,7 @@
  */
 import armorAtlas from './armor-atlas.json';
 import atlasUrl from '../assets/armor-atlas.png';
+import { mk } from '../gfx/canvas.js';
 /* 30 pieces cut from the six armor sheets (5 per set): background removed, area-downscaled to card size, colour-reduced
    and outlined in 'k'. One atlas holds the card sprites (up to 50x38), 16px and 10px bag icons. */
 export const SETS = [
@@ -58,14 +59,10 @@ export let ATLASC = null;
   const im = new Image();
   im.onload = () => {
     try {
-      const c = document.createElement('canvas');
-      c.width = im.width;
-      c.height = im.height;
-      c.getContext('2d', {
-        willReadFrequently: true,
-      }).drawImage(im, 0, 0);
+      const [c, x] = mk(im.width, im.height);
+      x.drawImage(im, 0, 0);
       ATLASC = c;
-    } catch (e) {
+    } catch {
       ATLASC = im;
     }
   };

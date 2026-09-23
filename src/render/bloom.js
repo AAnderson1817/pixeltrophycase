@@ -7,8 +7,7 @@ import { clamp } from '../core/util.js';
 import { H, SC, W } from '../game/layout.js';
 import { bg, bloomC, cv, mk } from '../gfx/canvas.js';
 
-let bsC = null,
-  bsG = null,
+let bsG = null,
   bloomImg = null,
   BLM = null;
 export function setupBloom() {
@@ -35,7 +34,7 @@ export function setupBloom() {
     bloomC.height = bh;
     bloomC.style.width = bw * F + 'px';
     bloomC.style.height = bh * F + 'px';
-    [bsC, bsG] = mk(hw, hh);
+    [, bsG] = mk(hw, hh);
     bsG.imageSmoothingEnabled = true;
     bsG.imageSmoothingQuality = 'low';
     bloomImg = bg.createImageData(bw, bh);

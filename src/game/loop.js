@@ -158,7 +158,7 @@ export function boot() {
         for (const ch of txt)
           for (const lit of [false, true])
             drawRampText(pg, ch, 0, 0, TS, (row) => (lit && row < 3 ? (row === 0 ? 'w' : 'o') : rp[row]));
-    } catch (e) {}
+    } catch {}
   });
   Object.assign(window.APP, {
     force: (r) => {

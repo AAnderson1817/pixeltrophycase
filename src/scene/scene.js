@@ -229,11 +229,8 @@ SCN.LDIRTY = true;
 export let ALTI = null;
 SCN.VOIDNEXT = null;
 SCN.voidJob = null;
-const tone = (v) => {
-  const l = Math.floor(6.35 * (1 - Math.exp(-1.3 * v)));
-  return l < 0 ? 0 : l > 6 ? 6 : l;
-};
-const TONE_T = [1, 2, 3, 4, 5, 6].map((k) => -Math.log(1 - k / 6.35) / 1.3); // tone(v) === number of thresholds <= v
+// toneF(v) === clamp(floor(6.35 * (1 - exp(-1.3 * v))), 0, 6), without the exp: the number of thresholds <= v
+const TONE_T = [1, 2, 3, 4, 5, 6].map((k) => -Math.log(1 - k / 6.35) / 1.3);
 export const toneF = (v) => {
   let l = 0;
   while (l < 6 && v >= TONE_T[l]) l++;

@@ -17,11 +17,11 @@ try {
     BAG = v;
     BAG.sets = BAG.sets || {};
   }
-} catch (e) {}
+} catch {}
 export const saveBag = () => {
   try {
     localStorage.setItem(STORE, JSON.stringify(BAG));
-  } catch (e) {}
+  } catch {}
 };
 export let slotShown = POOL.map((c) => !!BAG.owned[c.name]),
   slotFlash = POOL.map(() => -1);

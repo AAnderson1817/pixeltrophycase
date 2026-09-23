@@ -2,6 +2,7 @@
  * 3x5 bitmap font. Each (text, scale, colours) combination is rasterised once and cached as a canvas.
  */
 import { PAL } from '../core/palette.js';
+import { mk } from './canvas.js';
 
 const F3 = {
   A: '.#.#.#####.##.#',
@@ -69,10 +70,8 @@ export function txCache(key, w, h, paint) {
   let c = TXC.get(key);
   if (c) return c;
   if (TXC.size > 400) TXC.clear();
-  c = document.createElement('canvas');
-  c.width = Math.max(1, w);
-  c.height = Math.max(1, h);
-  const x = c.getContext('2d');
+  let x;
+  [c, x] = mk(Math.max(1, w), Math.max(1, h));
   paint(x);
   TXC.set(key, c);
   return c;

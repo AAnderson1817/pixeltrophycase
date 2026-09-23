@@ -12,17 +12,21 @@
     "test:golden:update": "UPDATE_GOLDEN=1 playwright test tests/golden.spec.js",
     "bench": "node scripts/bench.mjs",
     "sprites": "python3 tools/sprites/extract.py",
-    "format": "prettier --write \"src/**/*.{js,css}\" \"tests/**/*.js\" \"scripts/**/*.mjs\" index.html",
-    "format:check": "prettier --check \"src/**/*.{js,css}\" \"tests/**/*.js\" \"scripts/**/*.mjs\" index.html",
+    "format": "prettier --write \"src/**/*.{js,css}\" \"tests/**/*.js\" \"scripts/**/*.mjs\" \"*.config.js\" index.html",
+    "format:check": "prettier --check \"src/**/*.{js,css}\" \"tests/**/*.js\" \"scripts/**/*.mjs\" \"*.config.js\" index.html",
+    "lint": "eslint .",
     "test:dist": "npm run build && GAME_URL=file://$PWD/dist/index.html playwright test"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@playwright/test": "1.56.0",
+    "eslint": "^10.11.0",
+    "globals": "^17.12.0",
     "prettier": "^3.6.2",
     "vite": "^8.0.0",
     "vite-plugin-singlefile": "^2.3.3"
   },
   "engines": {
-    "node": ">=22.12.0"
+    "node": ">=22.13.0"
   }
 }
