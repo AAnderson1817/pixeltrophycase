@@ -11,6 +11,7 @@ import { RAR } from '../data/armor.js';
 import { FX, bolt, prune, ring, sparks } from '../fx/particles.js';
 import { fadeFlashes } from './bag.js';
 import { aftershock, arrive, assignCard, burst, teaseUp } from './flow.js';
+import { beginHold } from './input.js';
 import { CX, CY, HY, NARROW, PTOP, TORCH, W } from './layout.js';
 import { S, tens } from './state.js';
 import { SCN } from '../scene/scene.js';
@@ -166,6 +167,11 @@ export function step(dt, rdt) {
       sparks(22, 'c', 20, 100, 0.4, CX, CY, true);
       A.land();
       buzz(12);
+      if (S.queued) {
+        // pressed during the summon and still held: the hold starts now
+        S.queued = false;
+        beginHold(S.holdSrc);
+      }
     }
   }
   if (S.phase === 'collecting') {

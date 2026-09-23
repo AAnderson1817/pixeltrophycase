@@ -10,6 +10,8 @@ export const S = {
   slowmo: 0,
   charge: 0,
   holding: false,
+  holdSrc: null,
+  queued: false,
   auto: false,
   downAt: 0,
   reached: [0, 0, 0, 0],
