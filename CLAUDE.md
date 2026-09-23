@@ -78,7 +78,7 @@ Phase machine (`S.phase`): `entering → idle → hitstop → revealed → (upgr
 
 ## Golden frames
 
-`tests/golden.spec.js` hashes `#screen` and `#bloom` at ten checkpoints (idle, charge, hitstop, legendary reveal, wall break, settled, collect, fake rare, upgrade, epic). They were recorded from the original single-file game, so they prove the modular build is pixel-identical.
+`tests/golden.spec.js` hashes `#screen` and `#bloom` at ten checkpoints (idle, charge, hitstop, legendary reveal, wall break, settled, collect, fake rare, upgrade, epic). The first seven were recorded from the original single-file game, so they prove the modular build is pixel-identical. The last three were re-recorded after a script fix: the second hold used to start while the next card was still being summoned, so it was dropped and those checkpoints were idle frames.
 
 - A refactor must keep them passing unchanged.
 - An intentional visual change: run `npm run test:golden:update`, check the change by eye in `npm run dev` (the HUD pills and `APP.forceFake` reach every tier), and commit `tests/golden/frames.json` with the change that caused it, saying why in the commit message.

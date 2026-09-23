@@ -51,6 +51,10 @@ test('golden frames', async ({ page }) => {
   await adv(20);
   await snap('collect');
   await adv(80);
+  // The next card is still being summoned and a hold only starts once it is idle: step until it lands.
+  await act(() => {
+    for (let i = 0; i < 600 && APP.S.phase !== 'idle'; i++) window.__adv(1);
+  });
   await act(() => {
     APP.force(2);
     APP.forceFake = true;
