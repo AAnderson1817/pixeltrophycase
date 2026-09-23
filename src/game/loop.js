@@ -50,7 +50,7 @@ function tick(rdt) {
   S.box = lerp(S.box, boxT, 1 - Math.exp(-(boxT ? 9 : 3) * rdt));
   render();
 }
-/* pacing: on 90Hz+ displays render every Nth refresh (120Hz -> 60, 144Hz -> 72, 240Hz -> 60) for an even cadence.
+/* pacing: on ~115Hz+ displays render every Nth refresh (120Hz -> 60, 144Hz -> 72, 240Hz -> 60) for an even cadence.
    governor: script time per frame steers effect density; if frames still arrive late while script time is low, the
    blended bloom layer is switched off for a moment, and kept off only if that clearly fixes the frame rate. */
 const PACE = {

@@ -1,5 +1,5 @@
 /**
- * The fixed 26-colour palette (single-character keys), the same colours packed as ABGR for ImageData writes (U32),
+ * The fixed 32-colour palette (single-character keys), the same colours packed as ABGR for ImageData writes (U32),
  * the 4x4 Bayer matrix and the 7-step light ramps.
  */
 export const PAL = {

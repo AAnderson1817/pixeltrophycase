@@ -6,3 +6,4 @@ tools/sprites/out/
 __pycache__/
 *.pyc
 .DS_Store
+.claude/worktrees/

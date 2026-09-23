@@ -4,9 +4,9 @@
 
 |             |                                                                                                                                                                                                                                                                                                                                             |
 | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **FORMAT**  | One logical canvas at an integer pixel scale (2×–8×) filling the window. Card is 64×90 logical px, hovering over a stone altar.                                                                                                                                                                                                             |
-| **SCENE**   | Torch-lit vault: brick wall, mode-7 tiled floor, altar, two sconces. Every wall/floor pixel is lit per frame from three lights (two torches, the card) and quantised into 7-step palette ramps with Bayer dither. No alpha gradients.                                                                                                       |
-| **PALETTE** | 26 fixed colours (`PAL`, single-character keys). Ramps: stone `k 0 1 2 3 5 4` · torch `k 0 d b Y B o` · silver / teal / violet / gold rarity ramps.                                                                                                                                                                                         |
+| **FORMAT**  | One logical canvas at an integer pixel scale (at least 2×) filling the window. Card is 64×90 logical px, hovering over a stone altar.                                                                                                                                                                                                       |
+| **SCENE**   | Torch-lit vault: brick wall, mode-7 tiled floor, altar, two sconces. Each brick/tile is lit per frame from the two torches, the card, its beam and the reveal rays, and quantised into 7-step palette ramps; its pixels keep fixed bevel offsets. The altar is lit per pixel with Bayer dither. No alpha gradients.                         |
+| **PALETTE** | 32 fixed colours (`PAL`, single-character keys). Ramps: stone `k 0 1 2 3 5 4` · warm (torch) `k 0 d d b Y o` · silver / teal / violet / gold rarity ramps.                                                                                                                                                                                  |
 | **LOOT**    | 30 armor pieces from six sets, 5 per set. Rarity by piece type. Completing a set celebrates it; completing all six celebrates the collection.                                                                                                                                                                                               |
 | **MARKS**   | 1 px `k` outlines. Armor sprites cut from the concept sheets, area-downscaled to ≤50×38, colour-reduced. 3×5 bitmap font with per-row colour ramps. Square particles; 8×8 tile shards rotated nearest-neighbour; Bresenham lines. The card is drawn in pseudo-3D by column and row slices so it keeps hard pixels while it tilts and spins. |
 | **LIGHT**   | Torches are warm; the card's light is its rarity colour. While holding, the room fills with the tease colour.                                                                                                                                                                                                                               |
@@ -22,7 +22,7 @@
 - Glyphs, coins, chain links, torch halos and the art glow are cached sprites.
 - Bloom: half-res threshold (contrast 2.6, brightness .72, saturate 1.3, ~7 px spread) computed in JS on a small buffer; the browser only scales and screen-blends it.
 - Particle density is ~60% of the original design (`PERF.base` .62). A governor trims it further (`PERF.dq` down to .35) when script time per frame runs long, and drops the blended bloom layer only if hiding it is what restores the frame rate.
-- 90 Hz+ displays render every Nth refresh (120→60, 144→72, 240→60).
+- Displays of about 115 Hz and up render every Nth refresh (120→60, 144→72, 240→60); 90–110 Hz render every refresh.
 
 ## Sets and pieces
 
@@ -52,9 +52,9 @@ The draw picks a tier by odds (or the forced tier from the HUD pills), then a pi
 
 1. **Entering** — the card is summoned onto the altar, chained and padlocked.
 2. **Idle / charge** — hold to charge (1.6 s to full). Tease flashes at 38 / 62 / 85% charge up to the card's shown tier: the room light shifts to the tier colour, bolts and sparks escalate. Releasing early lets the charge decay; a quick tap auto-charges.
-3. **Hitstop** — at full charge the lock and chains break, time freezes for the tier's hitstop, then the impact frame.
+3. **Hitstop** — at full charge the lock and chains break and time freezes on the impact frame for the tier's hitstop, then the card reveals.
 4. **Revealed** — the front shows the piece, rarity frame, nameplate and three stat bars. The wall behind breaks open into a void (from 1.15 s), and a stamp reads **NEW!** or the duplicate count. Tap to fidget-spin the card.
-5. **Upgrading** (fake-outs only) — 2.2 s after a fake reveal the card cracks, glitches and re-reveals one tier higher.
+5. **Upgrading** (fake-outs only) — 2.2 s after a fake reveal the card cracks, glitches, goes through a second hitstop and re-reveals one tier higher.
 6. **Collecting** — **Draw another** flies the piece into its bag slot. Completing a set triggers the set celebration; completing all 30 triggers the collection celebration.
 7. Back to **Entering** with the wall rebuilt.
 

@@ -21,7 +21,7 @@ const NO_CANVAS = [
 ];
 
 export default [
-  { ignores: ['dist/', 'test-results/', 'playwright-report/', 'tools/sprites/out/'] },
+  { ignores: ['dist/', 'test-results/', 'playwright-report/', 'tools/sprites/out/', '.claude/worktrees/'] },
   js.configs.recommended,
   { rules: { 'no-empty': ['error', { allowEmptyCatch: true }] } },
   {

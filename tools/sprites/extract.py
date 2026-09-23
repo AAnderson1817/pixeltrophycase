@@ -22,6 +22,7 @@ OUTLINE = (7, 6, 15)
 
 # rarity: 0 common, 1 rare, 2 epic, 3 legendary.  box = (x0,y0,x1,y1) in sheet pixels.
 # keep: 'largest' | 'all' | int (n largest components).  rot: degrees counter-clockwise.
+# erase: sheet-space rects dropped before the flood fill.  fill: fill holes in the mask.  sat: saturation (default 1.12).
 PIECES = [
   # SOLAR (crimson sun)
   dict(set='solar', r=0, name='SOLAR BOOTS',  box=(1252, 500, 1380, 632), keep='largest'),
@@ -34,13 +35,13 @@ PIECES = [
   dict(set='eclipse', r=0, name='STAR GREAVES', box=(648, 182, 875, 580), keep=2),
   dict(set='eclipse', r=1, name='NIGHT BLADE',  box=(252, 185, 350, 568), keep='largest', rot=-40),
   dict(set='eclipse', r=2, name='ECLIPSE HELM', box=(168, 12, 318, 182), keep='largest'),
-  dict(set='eclipse', r=3, name='ECLIPSE MAIL', box=(330, 8, 642, 305), keep='largest', cut=True),
+  dict(set='eclipse', r=3, name='ECLIPSE MAIL', box=(330, 8, 642, 305), keep='largest'),
   # ANUBIS (turquoise jackal)
   dict(set='anubis', r=0, name='DUAT GREAVES', box=(1058, 540, 1288, 1004), keep='largest'),
   dict(set='anubis', r=0, name='SCARAB CREST', box=(302, 15, 558, 388), keep='largest'),
   dict(set='anubis', r=1, name='JACKAL AXE',   box=(448, 345, 608, 1008), keep='largest', rot=-40),
   dict(set='anubis', r=2, name='ANUBIS HELM',  box=(1092, 262, 1288, 528), keep='largest'),
-  dict(set='anubis', r=3, name='DUAT MANTLE',  box=(548, 0, 1122, 470), keep='largest', cut=True),
+  dict(set='anubis', r=3, name='DUAT MANTLE',  box=(548, 0, 1122, 470), keep='largest'),
   # QUETZAL (feathered)
   dict(set='quetzal', r=0, name='PLUME BOOTS',   box=(192, 522, 508, 990), keep='largest'),
   dict(set='quetzal', r=0, name='FEATHER WARD',  box=(488, 588, 634, 958), keep='largest'),
@@ -52,13 +53,13 @@ PIECES = [
   dict(set='lunar', r=0, name='WOLF MASK',   box=(1252, 22, 1502, 308), keep='largest'),
   dict(set='lunar', r=1, name='MOON SCYTHE', box=(1098, 410, 1290, 975), keep='largest'),
   dict(set='lunar', r=2, name='LUNAR HELM',  box=(502, 26, 664, 294), keep='largest'),
-  dict(set='lunar', r=3, name='LUNAR ROBE',  box=(600, 0, 1132, 560), keep='largest', cut=True),
+  dict(set='lunar', r=3, name='LUNAR ROBE',  box=(600, 0, 1132, 560), keep='largest'),
   # TIDAL (ocean)
   dict(set='tidal', r=0, name='TIDE GREAVES', box=(248, 272, 508, 998), keep='largest'),
   dict(set='tidal', r=0, name='OSPREY GUARD', box=(262, 22, 503, 258), keep='largest'),
   dict(set='tidal', r=1, name='WAVE SHIELD',  box=(468, 586, 634, 930), keep='largest'),
   dict(set='tidal', r=2, name='TIDE HELM',    box=(1092, 12, 1263, 308), keep='largest'),
-  dict(set='tidal', r=3, name='TIDAL PLATE',  box=(608, 0, 1066, 565), keep='largest', cut=True),
+  dict(set='tidal', r=3, name='TIDAL PLATE',  box=(608, 0, 1066, 565), keep='largest'),
 ]
 
 CARD = (48, 36)       # content box on the card (outline adds 1px each side)
@@ -130,7 +131,7 @@ def build(preview=True):
     for p in PIECES:
         im = cutout(p)
         sp = p.get('sat', 1.12); cards.append(shrink(im, CARD, 24, sp)); i16.append(shrink(im, ICON16, 14, sp + .06)); i10.append(shrink(im, ICON10, 10, sp + .1))
-    # atlas: 6 cols of 44x38 cells, then icons16 (15 per row), then icons10 (30 in a row)
+    # atlas: 5 cols x 6 rows of 50x38 card cells (one row per set), then icons16 (15 per row), then icons10 (30 in a row)
     CW, CH = CARD[0] + 2, CARD[1] + 2
     W = max(5 * CW, 15 * 16, 30 * 10); H = 6 * CH + 2 * 16 + 10
     atlas = Image.new('RGBA', (W, H), (0, 0, 0, 0)); meta = []

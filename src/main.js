@@ -1,4 +1,6 @@
-// Entry point. errors.js is imported first so its window 'error' handler is live before any other module evaluates.
+/**
+ * Entry point. errors.js is imported first so its window 'error' handler is live before any other module evaluates.
+ */
 import './core/errors.js';
 import './styles.css';
 import { showErr } from './core/errors.js';
