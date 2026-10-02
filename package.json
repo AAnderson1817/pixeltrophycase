@@ -1,0 +1,23 @@
+{
+  "name": "pixeltrophycase",
+  "version": "1.0.0",
+  "description": "A 20-stage 3D Rube Goldberg machine: Rapier rigid-body physics, Three.js PBR rendering, post-processing and GPU particle VFX.",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "simulate": "node scripts/simulate.mjs",
+    "screenshot": "node scripts/screenshot.mjs",
+    "test": "npm run simulate"
+  },
+  "dependencies": {
+    "@dimforge/rapier3d-compat": "0.21.0",
+    "three": "0.186.1"
+  },
+  "devDependencies": {
+    "playwright-core": "1.58.2",
+    "vite": "8.3.2"
+  }
+}
