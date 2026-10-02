@@ -82,6 +82,7 @@ export class Builder {
 
   addShape(part, s, { mass = null, impactThreshold = null } = {}) {
     const m = mat(s.material || part.material);
+    if (s.noCollide) { part.shapes.push({ ...s, pos: s.pos || { x: 0, y: 0, z: 0 }, rot: s.rot || Q.identity(), material: s.material || part.material }); return null; }
     let cd;
     switch (s.type) {
       case 'box': cd = RAPIER.ColliderDesc.cuboid(s.hx, s.hy, s.hz); break;

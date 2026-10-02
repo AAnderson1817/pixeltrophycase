@@ -1,13 +1,13 @@
 // Stages 17-20: hammer chain, marble cascade, vortex funnel, trophy case finale.
 import { V, Q, DEG, easeInOutCubic, clamp, rng } from '../../math.js';
-import { linePath, joinPaths, catmullRom, revolve } from '../geometry.js';
+import { linePath, joinPaths, catmullRom, revolve, extrudeProfile, rectProfile } from '../geometry.js';
 
 export function hammerChain(M) {
   const B = M.B;
   const S = M.stage({ name: 'hammers', title: 'Hammer Chain', blurb: 'The cart slams into the first of six hinged hammers; the last one drops onto the big red button.', input: { r: 0.3, material: 'steel', speed: 8.0 } });
   M.entrySensor(S, { x: 0.4, y: 0.4, z: 0 }, 0.6, p => p && p.name === 'cart');
   // track continues level, then the bumper
-  B.trough(linePath({ x: -0.5, y: 0.0, z: 0 }, { x: 2.3, y: 0.0, z: 0 }, 3), { profile: 'trough', width: 0.98, wall: 0.2, thick: 0.08, material: 'track' });
+  B.trough(linePath({ x: -0.5, y: 0.0, z: 0 }, { x: 2.3, y: 0.0, z: 0 }, 3), { radius: 0.55, arcDeg: 150, thick: 0.08, material: 'track' });
   B.fixedBox(0.15, 0.2, 0.55, { x: 2.55, y: 0.2, z: 0 }, { material: 'rubber', color: 0x1a1a1a, name: 'bumper' });
   // Floor plate for the hammer row
   B.fixedBox(5.0, 0.1, 1.0, { x: 6.8, y: -0.1, z: 0 }, { material: 'concrete', color: 0x6a6f78 });
@@ -133,7 +133,7 @@ function balanceBeam2(B, { pivot, arm, bucketW, bucketD, bucketH, gateH = 0.7, b
 export function vortexFunnel(M) {
   const B = M.B;
   const S = M.stage({ name: 'vortex', title: 'Gravity Well', blurb: 'The golden ball enters a hyperbolic funnel on a tangent and spirals for several orbits before dropping through the eye.', input: { r: 0.12, material: 'gold', speed: 2.0 } });
-  M.entrySensor(S, { x: 0.3, y: 0.2, z: 0 }, 0.4);
+  M.entrySensor(S, { x: 0.3, y: 0.2, z: 0 }, 0.5);
   const R = 2.4, rh = 0.25, depth = 1.6, cx = 3.0, cz = R + 0.2, yRim = -0.27;
   // entry trough curving to run tangentially at r = 2.2 (z = 0.4), ending inside the rim wall
   const path = catmullRom([{ x: -0.5, y: 0.02, z: 0 }, { x: 0, y: 0, z: 0 }, { x: 0.8, y: -0.06, z: 0.12 }, { x: 1.7, y: -0.15, z: 0.38 }, { x: 2.6, y: -0.24, z: 0.4 }, { x: cx + 0.3, y: yRim - 0.04, z: 0.4 }], 10);
@@ -170,9 +170,10 @@ export function trophyCase(M) {
   // Trophy cup (bowl) on top of the pixel trophy; the trough ends over its rim
   const tx = 3.45, cupTop = -0.5;
   const bowl = revolve([{ x: 0.42, y: 0 }, { x: 0.36, y: -0.26 }, { x: 0.2, y: -0.34 }, { x: 0.0, y: -0.36 }, { x: 0.0, y: -0.42 }, { x: 0.22, y: -0.4 }, { x: 0.4, y: -0.32 }, { x: 0.47, y: 0 }], 48);
-  B.mesh(bowl, { pos: { x: tx, y: cupTop, z: 0 }, material: 'gold', color: 0xffc83d, name: 'trophyCup' });
-  // the pixel trophy body is rendered from voxels; physics: a pedestal column + base plate
+  // the pixel trophy body is rendered from voxels; physics: the bowl + a pedestal column + base plate, one kinematic body
+  // (the bowl must ride with the pedestal, otherwise the rising column lifts the ball out of a fixed bowl)
   const pedestal = B.part([
+    { type: 'trimesh', geom: bowl, pos: { x: 0, y: 0.42, z: 0 } },
     { type: 'box', hx: 0.3, hy: 0.6, hz: 0.3, pos: { x: 0, y: -0.6, z: 0 } },
     { type: 'box', hx: 0.9, hy: 0.1, hz: 0.9, pos: { x: 0, y: -1.3, z: 0 } },
   ], { type: 'kinematic', pos: { x: tx, y: cupTop - 0.42, z: 0 }, material: 'gold', color: 0xffc83d, name: 'pedestal', visual: { trophy: true } });
@@ -185,7 +186,6 @@ export function trophyCase(M) {
     const spin = Math.max(0, t - 1.0) * 0.35;
     return { pos: V.add(rec.base.pos, V.scale(upW, rise)), rot: Q.mul(Q.axisAngle(axisW, spin), rec.base.rot) };
   });
-  // the cup moves with the pedestal: re-create it as part of the kinematic body instead of a fixed mesh
   B.sensor({ type: 'ball', r: 0.25 }, { x: tx, y: cupTop - 0.15, z: 0 }, { name: 'trophySensor', filter: p => p && (p.name === 'G' || p.name === 'TEST'), onEnter: (p, t) => { if (finaleAt === null) { finaleAt = t; M.reach(S, t); } } });
   // Glass case: floor plinth, three glass walls, two kinematic doors at the front (+z) that close after the finale
   const cw = 1.6, ch = 2.3, cd = 1.6, cy0 = cupTop - 1.7;
@@ -194,7 +194,12 @@ export function trophyCase(M) {
   const lowH = (cupTop - 0.75) - cy0;  // entry-side wall stops below the incoming trough
   B.fixedBox(0.02, lowH / 2, cd, { x: tx - cw, y: cy0 + lowH / 2, z: 0 }, { material: 'glass', color: 0xaad4ff, visual: { glass: true } });
   B.fixedBox(cw, ch / 2, 0.02, { x: tx, y: cy0 + ch / 2, z: -cd }, { material: 'glass', color: 0xaad4ff, visual: { glass: true } });
-  B.decor([{ type: 'box', hx: cw + 0.05, hy: 0.06, hz: cd + 0.05 }], { pos: { x: tx, y: cy0 + ch + 0.06, z: 0 }, material: 'steel', color: 0x3b3f46 });
+  // top frame: four thin rails (not a lid) so the camera can look down into the case
+  const railY = cy0 + ch + 0.04;
+  B.decor([
+    { type: 'box', hx: cw + 0.05, hy: 0.04, hz: 0.05, pos: { x: 0, y: 0, z: cd } }, { type: 'box', hx: cw + 0.05, hy: 0.04, hz: 0.05, pos: { x: 0, y: 0, z: -cd } },
+    { type: 'box', hx: 0.05, hy: 0.04, hz: cd, pos: { x: cw, y: 0, z: 0 } }, { type: 'box', hx: 0.05, hy: 0.04, hz: cd, pos: { x: -cw, y: 0, z: 0 } },
+  ], { pos: { x: tx, y: railY, z: 0 }, material: 'steel', color: 0x3b3f46 });
   for (const sx of [-1, 1]) {
     const hinge = { x: tx + sx * cw, y: cy0 + ch / 2, z: cd };
     const doorOpenRot = Q.yaw(sx * 95 * DEG);

@@ -5,7 +5,7 @@ import { linePath, joinPaths, catmullRom, loopPath, quarterTurn } from '../geome
 export function zigzagPlanks(M) {
   const B = M.B;
   const S = M.stage({ name: 'zigzag', title: 'Switchback Descent', blurb: 'Five stacked chutes with rubber bumpers zigzag the ball down three and a half metres.', input: { r: 0.15, material: 'aluminum', speed: 1.0 } });
-  M.entrySensor(S, { x: 0.3, y: 0.25, z: 0 }, 0.4);
+  M.entrySensor(S, { x: 0.3, y: 0.25, z: 0 }, 0.5);
   const levels = 5, len = 3.6, slope = 0.3, fall = 0.42;
   const xEven = [0.0, 3.6], xOdd = [4.6, 1.0];
   let y = 0;
@@ -35,7 +35,7 @@ export function zigzagPlanks(M) {
 export function loopTheLoop(M) {
   const B = M.B;
   const S = M.stage({ name: 'loop', title: 'Loop-the-Loop', blurb: 'A 4.7 m plunge feeds a 1.3 m radius vertical loop; the ball needs 3.6 m/s at the top and arrives with 5.5.', input: { r: 0.15, material: 'aluminum', speed: 2.5 } });
-  M.entrySensor(S, { x: 0.3, y: 0.25, z: 0 }, 0.4);
+  M.entrySensor(S, { x: 0.3, y: 0.25, z: 0 }, 0.5);
   const R = 1.3, drop = 4.75, xc = 7.5, zDrift = 0.8;
   const descent = catmullRom([{ x: -0.6, y: 0.02, z: 0 }, { x: 0, y: 0, z: 0 }, { x: 1.6, y: -0.55, z: 0 }, { x: 3.2, y: -2.0, z: 0 }, { x: 4.6, y: -3.6, z: 0 }, { x: 6.0, y: -4.55, z: 0 }, { x: xc, y: -drop, z: 0 }, { x: xc + 1.2, y: -drop, z: 0 }], 12);
   B.trough(descent, { radius: 0.3, arcDeg: 200, thick: 0.04, material: 'track' });
@@ -57,7 +57,7 @@ export function loopTheLoop(M) {
 export function paddleWheel(M) {
   const B = M.B;
   const S = M.stage({ name: 'paddle', title: 'Paddle Wheel', blurb: 'The ball drops through a shaft onto an eight-blade wheel; a rising blade flicks the next ball off its ledge.', input: { r: 0.15, material: 'aluminum', speed: 7.0 } });
-  M.entrySensor(S, { x: 0.3, y: 0.25, z: 0 }, 0.4);
+  M.entrySensor(S, { x: 0.3, y: 0.25, z: 0 }, 0.5);
   // Level trough into a vertical drop shaft (speed independent landing)
   const shaftX0 = 2.9, shaftX1 = 3.75, shaftTop = 0.4, shaftBot = -1.1;
   B.trough(linePath({ x: -0.4, y: 0.0, z: 0 }, { x: shaftX0 - 0.05, y: -0.02, z: 0 }, 4), { radius: 0.3, arcDeg: 200, thick: 0.04, material: 'track' });
@@ -103,7 +103,7 @@ export function paddleWheel(M) {
 export function pressurePlateRelease(M) {
   const B = M.B;
   const S = M.stage({ name: 'plate', title: 'Pressure Plate', blurb: 'A 57 kg sphere compresses a sprung plate; the switch retracts the hook holding a 1.4-tonne wrecking ball.', input: { r: 0.12, material: 'steel', speed: 1.0 } });
-  M.entrySensor(S, { x: 0.3, y: 0.2, z: 0 }, 0.4);
+  M.entrySensor(S, { x: 0.3, y: 0.2, z: 0 }, 0.5);
   // Ramp to the plate
   const plateX = 3.4, plateTop = -1.0;
   B.trough(catmullRom([{ x: -0.6, y: 0.03, z: 0 }, { x: 0, y: 0, z: 0 }, { x: 1.5, y: -0.45, z: 0 }, { x: 2.6, y: -0.9, z: 0 }, { x: plateX - 0.45, y: plateTop + 0.01, z: 0 }], 10), { radius: 0.2, arcDeg: 180, thick: 0.035, material: 'track' });

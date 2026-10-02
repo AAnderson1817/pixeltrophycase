@@ -90,7 +90,7 @@ export function balanceGate(M) {
 export function plinko(M) {
   const B = M.B;
   const S = M.stage({ name: 'plinko', title: 'Plinko Board', blurb: 'The sphere rattles down six rows of staggered pegs between glass sheets into a collector.', input: { r: 0.1, material: 'steel', speed: 1.5 } });
-  M.entrySensor(S, { x: 0.3, y: 0.15, z: 0 }, 0.35);
+  M.entrySensor(S, { x: 0.3, y: 0.15, z: 0 }, 0.5);
   // short trough to the board top, then a drop into the peg field
   B.trough(linePath({ x: -0.4, y: 0.01, z: 0 }, { x: 0.9, y: -0.08, z: 0 }, 3), { radius: 0.16, arcDeg: 180, thick: 0.035, material: 'track' });
   const bx = 1.1, top = -0.3, rows = 6, dy = 0.45, dx = 0.5, halfW = 1.6, gap = 0.17;

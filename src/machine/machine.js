@@ -102,6 +102,7 @@ export class Machine {
   bounds() {
     const min = { x: Infinity, y: Infinity, z: Infinity }, max = { x: -Infinity, y: -Infinity, z: -Infinity };
     for (const p of this.pw.parts) {
+      if (p.name === 'floor') continue; // the hall slab is not part of the machine's extent
       const t = p.curr;
       let r = 0.5;
       for (const s of p.shapes) {
@@ -125,7 +126,7 @@ export function buildMachine(pw, { maxStages = 999, origin = { x: -28, y: 29, z:
   const B = M.B;
   // Hall floor (world y = 0)
   B.setFrame({ pos: { x: 0, y: 0, z: 0 }, rot: Q.identity() });
-  B.fixedBox(90, 0.5, 90, { x: 0, y: -0.5, z: 0 }, { material: 'concrete', color: 0x7a7d82, name: 'floor' });
+  B.fixedBox(90, 0.5, 90, { x: 0, y: -0.5, z: 0 }, { material: 'concrete', color: 0x7a7d82, name: 'floor', visual: { hidden: true } });
   B.frames.length = 1;
   B.setFrame({ pos: origin, rot: Q.identity() });
   let exit = { pos: { x: 0, y: 0, z: 0 }, yaw: 0 };

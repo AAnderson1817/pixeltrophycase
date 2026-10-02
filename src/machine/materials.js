@@ -21,6 +21,7 @@ export const MATERIALS = {
   copper:   { friction: 0.40, restitution: 0.45, density: 8960 },
   cradle:   { friction: 0.40, restitution: 0.80, density: 2700 },  // polished aluminium cradle spheres
   conveyor: { friction: 1.60, restitution: 0.05, density: 1100 },  // grippy roller lagging
+  skid:     { friction: 0.04, restitution: 0.10, density: 2000 },  // PTFE sled runners on steel rail
 };
 export function mat(name) {
   const m = MATERIALS[name];

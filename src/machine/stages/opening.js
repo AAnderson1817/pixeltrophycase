@@ -11,7 +11,7 @@ export function releaseAndHelix(M) {
   const helix = helixPath({ cx: 2.5, cz: R, radius: R, y0: -0.15, y1: -0.15 - drop, a0: -Math.PI / 2 - Math.PI * 2 * turns, turns, dir: 1, segmentsPerTurn: 96 });
   const p3 = linePath({ x: 2.5, y: -0.15 - drop, z: 0 }, { x: 5.2, y: -0.15 - drop - 0.25, z: 0 }, 6);
   const path = joinPaths(p1, helix, p3);
-  B.trough(path, { radius: 0.22, arcDeg: 180, thick: 0.04, material: 'track', name: 'helixTrough' });
+  B.trough(path, { radius: 0.22, arcDeg: 245, thick: 0.04, material: 'track', name: 'helixTrough' }); // deep enough to hold the ball at 4 m/s on the 1.6 m helix
   // Central column + supports (decor + collider so nothing passes through)
   B.cylinder(drop / 2 + 1.2, 0.35, { x: 2.5, y: -0.15 - drop / 2 - 0.4, z: R }, { type: 'fixed', material: 'concrete', color: 0x6a6f78 });
   for (let i = 0; i <= 8; i++) {
@@ -43,7 +43,7 @@ export function releaseAndHelix(M) {
 export function dominoSerpentine(M) {
   const B = M.B;
   const S = M.stage({ name: 'dominoes', title: 'Domino Serpentine', blurb: '130 dominoes snake across the platform; a wooden capstone nudges a 190 kg sphere over the edge.' });
-  M.entrySensor(S, { x: 0.3, y: 0.2, z: 0 }, 0.35);
+  M.entrySensor(S, { x: 0.3, y: 0.2, z: 0 }, 0.5);
   const xk = 1.3;                     // kicker position
   const gapA = xk + 0.12, gapB = xk + 1.15;  // pit: 1.03 m long so the sphere drops in cleanly
   const L1 = 0, L2 = 3.2, L3 = 6.4;   // lane z positions

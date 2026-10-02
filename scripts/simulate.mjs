@@ -56,7 +56,8 @@ for (let i = 0; i < steps; i++) {
       const tilt = Math.acos(Math.max(-1, Math.min(1, upY))) * 180 / Math.PI;
       let ang = '';
       if (localStage >= 0 && machine.stages[localStage]) { const f = machine.stages[localStage].frame; const c = { x: -f.rot.x, y: -f.rot.y, z: -f.rot.z, w: f.rot.w }; const ql = { x: c.w * q.x + c.x * q.w + c.y * q.z - c.z * q.y, y: c.w * q.y - c.x * q.z + c.y * q.w + c.z * q.x, z: c.w * q.z + c.x * q.y - c.y * q.x + c.z * q.w, w: c.w * q.w - c.x * q.x - c.y * q.y - c.z * q.z }; ang = ` angZ=${(2 * Math.atan2(ql.z, ql.w) * 180 / Math.PI).toFixed(1)}`; }
-      return `${n}:(${t.x.toFixed(2)},${t.y.toFixed(2)},${t.z.toFixed(2)}) v=${Math.hypot(v.x, v.y, v.z).toFixed(2)} tilt=${tilt.toFixed(0)}${ang}`;
+      const av = p.body.angvel();
+      return `${n}:(${t.x.toFixed(2)},${t.y.toFixed(2)},${t.z.toFixed(2)}) v=${Math.hypot(v.x, v.y, v.z).toFixed(2)} w=${Math.hypot(av.x, av.y, av.z).toFixed(1)} tilt=${tilt.toFixed(0)}${ang}`;
     });
     const fallen = pw.parts.filter(p => p.instanceKey === 'domino' && (1 - 2 * (p.curr.qx ** 2 + p.curr.qz ** 2)) < 0.7).length;
     let contacts = '';
