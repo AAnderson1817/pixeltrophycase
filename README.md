@@ -10,6 +10,8 @@ Plain JavaScript ES modules on an index-colour software framebuffer (384×216, 3
 alpha blending) presented on Canvas 2D at an integer scale, with chip-voice audio through Web Audio. No runtime
 dependencies; the production build is one self-contained HTML file.
 
+Live: https://claude.ai/artifact/ErSv9mLzmwrbPjS6577Mbj
+
 ![Finale](docs/shots/07_finale.png)
 
 | ![Summon](docs/shots/01_summon.png) | ![Present](docs/shots/02_present.png) | ![Landed](docs/shots/04_landed.png) |
@@ -23,7 +25,7 @@ Frames are from the headless render check (`npm run screenshot`), Chromium at 19
 ```bash
 npm install
 npm run dev          # http://localhost:5173
-npm run build        # dist/ plus dist/pixeltrophycase.html (single file)
+npm run build        # dist/ plus dist/pixeltrophycase.html (single file) and dist/artifact.html (body-only, for claude.ai)
 npm run screenshot   # headless Chromium: drives the ceremony to nine key moments, PNGs in scripts/out/
 npm test             # same, with assertions: nine seatings, finale, dissolve, loop restart, no console errors
 ```

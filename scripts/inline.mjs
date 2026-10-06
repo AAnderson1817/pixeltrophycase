@@ -11,3 +11,10 @@ html = html.replace(/<link rel="stylesheet"[^>]*href="\.\/app\.css"[^>]*>/, () =
 if (html.includes('app.js') || html.includes('app.css')) throw new Error('inline: a reference to app.js/app.css survived');
 fs.writeFileSync(path.join(dist, 'pixeltrophycase.html'), html);
 console.log(`dist/pixeltrophycase.html  ${(html.length / 1024).toFixed(1)} kB`);
+
+// Body-only variant for claude.ai artifacts, which supply their own document skeleton.
+const title = 'Trophy Case of Cyiurkhhn IV';
+const body = html.match(/<body>([\s\S]*)<\/body>/)[1].replace(/<script type="module">[\s\S]*<\/script>/, '').trim();
+const artifact = `<title>${title}</title>\n<style>\n:root { color-scheme: dark; }\n${css}\n</style>\n${body}\n<script type="module">\n${js}\n</script>\n`;
+fs.writeFileSync(path.join(dist, 'artifact.html'), artifact);
+console.log(`dist/artifact.html          ${(artifact.length / 1024).toFixed(1)} kB`);
