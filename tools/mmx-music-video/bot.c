@@ -24,6 +24,7 @@ static int xpos() { return snes->ram[0xBAD] | (snes->ram[0xBAE] << 8); }
 static int ypos() { return snes->ram[0xBB0] | (snes->ram[0xBB1] << 8); }
 static int hp() { return snes->ram[0xBCF]; }
 static int lives() { return snes->ram[0x1F80]; }
+static int ehp() { int h = snes->ram[0xE8F]; return (h > 0 && h <= 32) ? h : 0; }
 
 typedef struct { uint8_t* buf; int size; } State;
 static State saveS() { State s; s.buf = malloc(0x200000); s.size = snes_saveState(snes, s.buf); return s; }
@@ -48,7 +49,7 @@ int main(int argc, char** argv) {
   int stall = 0; int lastBestX = xpos();
   State hist[64]; int nh = 0;
   while(total < maxFrames) {
-    State base = saveS(); int bx = xpos(), bhp = hp(), bl = lives();
+    State base = saveS(); int bx = xpos(), bhp = hp(), bl = lives(), behp = ehp();
     H = stall > 3 ? 200 : 120; N = stall > 3 ? 20 : 14; int bestScore = -1000000; int bestSeq[HMAX]; bool found = false;
     for(int c = 0; c < N; c++) {
       loadS(base);
@@ -59,6 +60,7 @@ int main(int argc, char** argv) {
       int shootEvery = stallMode ? (8 + rand() % 10) : (20 + rand() % 40); int noRight = (c == N - 1) ? 1 : 0;
       int rep = (c % 3 == 1) || (stallMode && c % 2 == 0); int rp = 16 + rand() % 16, rl = 6 + rand() % 10, r0 = rand() % 30;
       int retreat = stallMode && (c % 5 == 4); int rt = 20 + rand() % 60;
+      int charge = stallMode && (c % 4 == 2); int cl = 70 + rand() % 50;
       for(int i = 0; i < H; i++) {
         int m = noRight ? 0 : B_RIGHT;
         if(retreat && i < rt) m = B_LEFT;
@@ -67,7 +69,8 @@ int main(int argc, char** argv) {
           if(i >= js && i < js + jl) m |= B_B;
           if(twojump && i >= js2 && i < js2 + jl2) m |= B_B;
         }
-        if((i % shootEvery) < 3) m |= B_Y;
+        if(charge) { if((i % (cl + 6)) < cl) m |= B_Y; }
+        else if((i % shootEvery) < 3) m |= B_Y;
         seq[i] = m;
       }
       int score = 0; bool dead = false; int minHp = bhp;
@@ -78,7 +81,8 @@ int main(int argc, char** argv) {
       }
       if(dead) continue;
       int dx = xpos() - bx;
-      score = dx * 3 - (bhp - minHp) * (stallMode ? 20 : 80) + (hp() - bhp) * 50 + (rand() % 5);
+      int edmg = (behp > 0 && ehp() < behp) ? (behp - ehp()) : (behp > 0 && ehp() == 0 ? behp : 0);
+      score = dx * 3 - (bhp - minHp) * (stallMode ? 20 : 80) + (hp() - bhp) * 50 + edmg * 60 + (rand() % 5);
       if(score > bestScore) { bestScore = score; memcpy(bestSeq, seq, sizeof(int) * H); found = true; }
     }
     if(!found) {

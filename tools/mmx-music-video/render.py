@@ -97,30 +97,30 @@ mont = [(ATT, 15960, 'box'), (RUN, 3600, 'cover'), (ATT, 16050, 'box'), (RUN, 36
 for i, (src, f, st) in enumerate(mont):
     addb(224 + i, 225 + i, src, f, 1.0, st, cx=0.0, cy=0.45, split=3 if i >= 24 else 0, glitch=(i >= 28))
 # loop 3 ------------------------------------------------------------- (beats 256..383)
-addb(256, 264, RUN, 4000, 1.0, 'cover', cx=0.0, cy=0.45, flash=1.0)
-addb(264, 268, RUN, 4200, 1.0, 'pillar')
+addb(256, 264, RUN, 3230, 1.0, 'cover', cx=0.0, cy=0.3, flash=1.0)
+addb(264, 268, RUN, 4000, 1.0, 'pillar')
 addb(268, 272, RUN, 4320, 1.0, 'cover', cx=0.2, cy=0.4)
-addb(272, 276, RUN, 4440, 0.5, 'cover', cx=0.0, cy=0.45)              # slow-mo
+addb(272, 276, RUN, 4440, 0.5, 'cover', cx=0.0, cy=0.3)              # slow-mo
 addb(276, 280, RUN, 4560, 1.0, 'cover', cx=0.0, cy=0.45)
 addb(280, 284, RUN, 4680, 1.0, 'box')
 addb(284, 288, RUN, 4800, 1.0, 'cover', cx=0.3, cy=0.45)
-addb(288, 296, RUN, 4920, 1.0, 'cover', cx=0.0, cy=0.5, cy2=0.3)
+addb(288, 296, RUN, 4920, 1.0, 'cover', cx=0.0, cy=0.5, cy2=0.2)
 addb(296, 300, RUN, 5160, 1.0, 'pillar')
 addb(300, 304, RUN, 5280, 1.0, 'cover', cx=0.0, cy=0.45)
-addb(304, 308, RUN, 5400, 0.5, 'cover', cx=0.2, cy=0.4)
+addb(304, 308, RUN, 5400, 0.5, 'cover', cx=0.2, cy=0.3)
 addb(308, 312, RUN, 5520, 1.0, 'cover', cx=0.0, cy=0.45)
 addb(312, 320, RUN, 5640, 1.0, 'pillar')
 fast = []
 for i in range(32):
-    fast.append((RUN, 5880 + i * 40, 'cover') if i % 2 == 0 else (ATT, [9930, 10920, 11370, 11730, 12900, 13710, 15000, 15420, 16590, 17130, 17850, 18030, 12360, 13170, 11100, 14430][i // 2], 'cover'))
+    fast.append((RUN, 3400 + i * 80, 'cover') if i % 2 == 0 else (ATT, [9930, 10920, 11370, 11730, 12900, 13710, 15000, 15420, 16590, 17130, 17850, 18030, 12360, 13170, 11100, 14430][i // 2], 'cover'))
 for i, (src, f, st) in enumerate(fast):
     addb(320 + i, 321 + i, src, f, 1.0, st, cx=0.0, cy=0.45, split=2 if i % 2 else 0)
-addb(352, 356, RUN, 6520, 1.0, 'cover', cx=0.0, cy=0.45, flash=1.0)
-addb(356, 360, RUN, 6640, 1.0, 'cover', cx=0.3, cy=0.4)
-addb(360, 368, RUN, 6760, 1.0, 'pillar')
+addb(352, 356, RUN, 5100, 1.0, 'cover', cx=0.0, cy=0.3, flash=1.0)
+addb(356, 360, RUN, 5300, 1.0, 'cover', cx=0.3, cy=0.3)
+addb(360, 368, RUN, 5700, 1.0, 'pillar')
 addb(368, 372, ATT, 7400, 1.0, 'pillar', flash=1.0)
 addb(372, 376, ATT, 7410, 1.0, 'pillar')
-addb(376, 384, RUN, 7000, 1.0, 'box')
+addb(376, 384, RUN, 5500, 1.0, 'box')
 addb(384, NBEATS, ATT, 2800, 1.0, 'box', fadeout=True)               # end card: X idle
 
 shots.sort(key=lambda s: s['t0'])

@@ -22,7 +22,7 @@ static uint8_t* readFile(const char* path, int* len) {
 int main(int argc, char** argv) {
   const char* rom = NULL; const char* vout = NULL; const char* aout = NULL; const char* script = NULL;
   const char* loadState = NULL; const char* saveState = NULL; int saveAt = -1; const char* ramOut = NULL; int ramEvery = 0;
-  const char* voiceLog = NULL; int frames = 600; int skipVideo = 0; const char* hexWatch = NULL; int apuOnlyFrom = -1; const char* muteSched = NULL;
+  const char* voiceLog = NULL; int frames = 600; int skipVideo = 0; const char* hexWatch = NULL; int apuOnlyFrom = -1; int startFrame = 0; const char* muteSched = NULL;
   for(int i = 1; i < argc; i++) {
     if(!strcmp(argv[i], "--rom")) rom = argv[++i];
     else if(!strcmp(argv[i], "--video")) vout = argv[++i];
@@ -37,6 +37,7 @@ int main(int argc, char** argv) {
     else if(!strcmp(argv[i], "--novideo")) skipVideo = 1;
     else if(!strcmp(argv[i], "--watch")) hexWatch = argv[++i];
     else if(!strcmp(argv[i], "--apuonly")) apuOnlyFrom = atoi(argv[++i]);
+    else if(!strcmp(argv[i], "--startframe")) startFrame = atoi(argv[++i]);
   }
   int vfd = dup(1); dup2(2, 1);
   int len; uint8_t* data = readFile(rom, &len); if(!data) { fprintf(stderr, "no rom\n"); return 1; }
@@ -59,7 +60,7 @@ int main(int argc, char** argv) {
   // watch list: comma separated hex addresses in WRAM
   int watch[64]; int nwatch = 0;
   if(hexWatch) { char* c = strdup(hexWatch); for(char* t = strtok(c, ","); t; t = strtok(NULL, ",")) watch[nwatch++] = strtol(t, NULL, 16); }
-  for(int fr = 0; fr < frames; fr++) {
+  for(int fr = startFrame; fr < frames; fr++) {
     int mask = 0; for(int i = 0; i < nev; i++) if(fr >= evs[i].f1 && fr <= evs[i].f2) mask |= evs[i].mask;
     for(int b = 0; b < 12; b++) snes_setButtonState(snes, 1, b, (mask >> b) & 1);
     memset(dspVoiceActivity, 0, sizeof dspVoiceActivity);
