@@ -1,0 +1,38 @@
+diff --git a/snes/dsp.c b/snes/dsp.c
+index 720c406..72cdcce 100644
+--- a/snes/dsp.c
++++ b/snes/dsp.c
+@@ -59,6 +59,8 @@ static const int gaussValues[512] = {
+ static int clamp16(int val);
+ static int clip16(int val);
+ static bool dsp_checkCounter(Dsp* dsp, int rate);
++int dspVoiceMuteMask = 0;
++long dspVoiceActivity[8] = {0};
+ static void dsp_cycleChannel(Dsp* dsp, int ch);
+ static void dsp_handleEcho(Dsp* dsp);
+ static void dsp_handleGain(Dsp* dsp, int ch);
+@@ -343,6 +345,8 @@ static void dsp_cycleChannel(Dsp* dsp, int ch) {
+   dsp->ram[(ch << 4) | 8] = dsp->channel[ch].gain >> 4;
+   dsp->ram[(ch << 4) | 9] = sample >> 8;
+   dsp->channel[ch].sampleOut = sample;
++  dspVoiceActivity[ch] += (sample < 0 ? -sample : sample);
++  if(dspVoiceMuteMask & (1 << ch)) return;
+   dsp->sampleOutL = clamp16(dsp->sampleOutL + ((sample * dsp->channel[ch].volumeL) >> 7));
+   dsp->sampleOutR = clamp16(dsp->sampleOutR + ((sample * dsp->channel[ch].volumeR) >> 7));
+   if(dsp->channel[ch].echoEnable) {
+diff --git a/snes/snes.c b/snes/snes.c
+index 3688180..bcaaf9d 100644
+--- a/snes/snes.c
++++ b/snes/snes.c
+@@ -547,3 +547,11 @@ void snes_runSpcCycle(Snes* snes) {
+   // TODO: apu catchup is not aware of this, SPC runs extra cycle(s)
+   spc_runOpcode(snes->apu->spc);
+ }
++
++// added: run only the APU for one NTSC frame's worth of time (main CPU frozen)
++void snes_runApuOnlyFrame(Snes* snes) {
++  double cyc = (snes->palTiming ? apuCyclesPerMasterPal : apuCyclesPerMaster) * 357366.0;
++  snes->apuCatchupCycles += cyc;
++  int ran = apu_runCycles(snes->apu, (int) snes->apuCatchupCycles);
++  snes->apuCatchupCycles -= ran;
++}
