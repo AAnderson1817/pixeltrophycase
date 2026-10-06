@@ -1,0 +1,61 @@
+:root {
+  color-scheme: dark;
+  --gold: #f2cf4a;
+  --gold-dim: #c9961e;
+  --ink: #07060f;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: var(--ink); overflow: hidden; }
+body {
+  font: 12px/1.4 ui-monospace, 'Cascadia Mono', 'JetBrains Mono', Menlo, Consolas, monospace;
+  color: var(--gold);
+  letter-spacing: 0.06em;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(ellipse at 50% 60%, #140f26 0%, var(--ink) 65%);
+}
+#stage { position: relative; line-height: 0; }
+#screen, #bloom {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  display: block;
+}
+#bloom {
+  position: absolute; inset: 0;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  opacity: 0.6;
+  filter: blur(calc(var(--scale, 2) * 1.6px));
+  image-rendering: auto;
+}
+#hud {
+  position: fixed; left: 0; right: 0; bottom: 0;
+  display: flex; justify-content: space-between; align-items: flex-end; gap: 16px;
+  padding: 10px 14px;
+  background: linear-gradient(to top, rgba(7, 6, 15, 0.9), rgba(7, 6, 15, 0));
+  transition: opacity 0.6s;
+}
+#hud.idle { opacity: 0; }
+#hud:hover, #hud:focus-within { opacity: 1; }
+.title { display: flex; flex-direction: column; gap: 2px; }
+.t1 { font-weight: 700; letter-spacing: 0.22em; }
+.t2 { color: var(--gold-dim); font-size: 11px; }
+.controls { display: flex; gap: 6px; }
+.controls button {
+  font: inherit; color: var(--gold); background: rgba(7, 6, 15, 0.7);
+  border: 1px solid var(--gold-dim); padding: 4px 10px; cursor: pointer;
+  letter-spacing: 0.1em; text-transform: uppercase; min-width: 44px;
+}
+.controls button:hover, .controls button:focus-visible { background: #2a1548; border-color: var(--gold); outline: none; }
+.controls button[aria-pressed='true'] { background: var(--gold-dim); color: var(--ink); }
+#phase { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+#err {
+  position: fixed; inset: auto 12px 56px 12px; padding: 10px 12px;
+  background: #3a0b1e; color: #ffa0c0; border: 1px solid #e8557a; white-space: pre-wrap; font-size: 11px;
+}
+@media (max-width: 640px) {
+  #hud { flex-direction: column; align-items: stretch; }
+  .controls { justify-content: space-between; }
+  .controls button { flex: 1; }
+}

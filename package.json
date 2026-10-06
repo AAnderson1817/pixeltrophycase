@@ -1,0 +1,21 @@
+{
+  "name": "pixeltrophycase",
+  "version": "3.0.0",
+  "private": true,
+  "description": "Pixel Trophy Case, Galactic Bespoke Edition: a pixel-art investiture ceremony for the High Throne of Cyiurkhhn IV. Canvas 2D, index-colour framebuffer, chip audio, no runtime dependencies.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && node scripts/inline.mjs",
+    "preview": "vite preview",
+    "screenshot": "node scripts/screenshot.mjs",
+    "test": "node scripts/screenshot.mjs --check"
+  },
+  "devDependencies": {
+    "playwright-core": "1.63.0",
+    "vite": "8.3.3"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
